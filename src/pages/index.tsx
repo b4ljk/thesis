@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { api } from "~/utils/api";
 import { useState } from "react";
 import { decryptMessage, encryptMessage } from "~/utils/encryption";
+import { Label } from "~/components/ui/label";
 
 export default function Home() {
   const hello = api.example.hello.useQuery({ text: "from tRPC" });
@@ -46,6 +47,10 @@ export default function Home() {
               disabled
               placeholder="output"
             />
+            <div className="col-span-2 grid w-full max-w-sm items-center gap-1.5">
+              <Label htmlFor="picture">Picture</Label>
+              <Input id="picture" type="file" />
+            </div>
           </div>
         </Center>
       </main>

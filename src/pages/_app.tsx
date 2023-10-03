@@ -6,6 +6,7 @@ import { api } from "~/utils/api";
 
 import "~/styles/globals.css";
 import { ThemeProvider } from "../components/theme-provider";
+import Header from "~/components/header";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -16,10 +17,11 @@ const MyApp: AppType<{ session: Session | null }> = ({
       <div className="min-h-screen w-full">
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >
+          <Header />
           <Component {...pageProps} />
         </ThemeProvider>
       </div>
