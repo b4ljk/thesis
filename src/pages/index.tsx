@@ -48,8 +48,12 @@ export default function Home() {
               placeholder="output"
             />
             <div className="col-span-2 grid w-full max-w-sm items-center gap-1.5">
-              <Label htmlFor="picture">Picture</Label>
-              <Input id="picture" type="file" />
+              <Label className="cursor-pointer" htmlFor="file_upload">
+                <div className="flex h-24 items-center justify-center rounded-md border-2 border-dashed border-blue-600 transition-colors duration-200 hover:bg-slate-200">
+                  Гарын үсэг зурах бичиг баримтыг оруулна уу
+                </div>
+              </Label>
+              <Input className="hidden" id="file_upload" type="file" />
             </div>
           </div>
         </Center>
