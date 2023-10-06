@@ -5,7 +5,7 @@ import { api } from "~/utils/api";
 import { useState } from "react";
 
 export default function Home() {
-  // const hello = api.example.hello.useQuery({ text: "from tRPC" });
+  const hello = api.example.hello.useQuery({ text: "hello world" });
 
   return (
     <div className="flex min-h-screen w-full">

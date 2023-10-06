@@ -13,6 +13,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Menu } from "lucide-react";
 import { Button } from "./ui/button";
+import LoginButton from "./auth/loginButton";
 // import LoginButton from "./login_modal";
 
 const Header = () => {
@@ -51,8 +52,8 @@ const Header = () => {
 
         <div className="hidden items-center lg:flex lg:gap-x-12"></div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-          {/* <LoginButton /> */}
-          <div>test</div>
+          <LoginButton />
+          {/* <div>test</div> */}
         </div>
       </nav>
       <Dialog open={opened} onOpenChange={setOpened}>
@@ -76,8 +77,8 @@ const Header = () => {
               </a> */}
             </nav>
             <div className=" mt-4 w-full border-t border-t-gray-200 pt-4">
-              {/* <LoginButton /> */}
-              <div>test</div>
+              <LoginButton />
+              {/* <div>test</div> */}
             </div>
           </div>
         </DialogContent>
