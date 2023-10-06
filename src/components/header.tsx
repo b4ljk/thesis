@@ -28,14 +28,15 @@ const Header = () => {
       >
         <div className="flex lg:flex-1">
           <Link href="/">
-            <div className="-m-1.5 p-1.5">
+            <div className="-m-1.5 flex items-center gap-2 p-1.5">
               <Image
-                height={32}
-                width={32}
-                className="h-8 w-auto"
-                src="/images/logo_icon_new.png"
-                alt=""
+                height={80}
+                width={80}
+                className="h-12 w-auto object-cover dark:invert"
+                src="/images/logo.png"
+                alt="logo"
               />
+              <p className="font-bold">Cloudsign</p>
             </div>
           </Link>
         </div>

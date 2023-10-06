@@ -14,7 +14,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
-      <div className="min-h-screen w-full">
+      <div className="min-h-screen w-full pt-[75px]">
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
