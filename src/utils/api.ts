@@ -1,15 +1,20 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 /**
  * This is the client-side entrypoint for your tRPC API. It is used to create the `api` object which
  * contains the Next.js App-wrapper, as well as your type-safe React Query hooks.
  *
  * We also create a few inference helpers for input and output types.
  */
-import { httpBatchLink, loggerLink } from "@trpc/client";
+import { TRPCClientError, httpBatchLink, loggerLink } from "@trpc/client";
 import { createTRPCNext } from "@trpc/next";
 import { type inferRouterInputs, type inferRouterOutputs } from "@trpc/server";
 import superjson from "superjson";
 
 import { type AppRouter } from "~/server/api/root";
+import { MutationCache, QueryCache, QueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
+import { type TRPCErrorShape } from "@trpc/server/rpc";
+import { getError } from "~/lib/utils";
 
 const getBaseUrl = () => {
   if (typeof window !== "undefined") return ""; // browser should use relative url
@@ -17,10 +22,33 @@ const getBaseUrl = () => {
   return `http://localhost:${process.env.PORT ?? 3000}`; // dev SSR should use localhost
 };
 
+const queryClient = new QueryClient({
+  queryCache: new QueryCache({
+    onError: (err) => {
+      toast.error("Алдаа гарлаа");
+    },
+  }),
+  mutationCache: new MutationCache({
+    onError: (error) => {
+      toast.error(getError(error));
+    },
+  }),
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: false,
+    },
+    mutations: {
+      retry: false,
+    },
+  },
+});
+
 /** A set of type-safe react-query hooks for your tRPC API. */
 export const api = createTRPCNext<AppRouter>({
   config() {
     return {
+      queryClient,
       /**
        * Transformer used for data de-serialization from the server.
        *

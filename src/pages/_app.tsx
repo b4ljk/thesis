@@ -7,6 +7,7 @@ import { api } from "~/utils/api";
 import "~/styles/globals.css";
 import { ThemeProvider } from "../components/theme-provider";
 import Header from "~/components/header";
+import { Toaster } from "react-hot-toast";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -14,7 +15,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
-      <div className="min-h-screen w-full pt-[75px]">
+      <div className="min-h-screen w-full pt-[90px]">
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
@@ -23,6 +24,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
         >
           <Header />
           <Component {...pageProps} />
+          <Toaster />
         </ThemeProvider>
       </div>
     </SessionProvider>

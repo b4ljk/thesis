@@ -1,3 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { type GetServerSidePropsContext } from "next";
 import {
@@ -11,28 +16,32 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { env } from "~/env.mjs";
 import { db } from "~/server/db";
 import { type LoginInput } from "~/utils/schemas";
-import { api } from "~/utils/api";
-import { authRouter } from "./api/routers/auth";
-
+import bcrypt from "bcrypt";
+import { TRPCError } from "@trpc/server";
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
  * object and keep type safety.
  *
  * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
  */
+
+type UserRole = "ADMIN" | "USER";
+
 declare module "next-auth" {
   interface Session extends DefaultSession {
     user: DefaultSession["user"] & {
       id: string;
       // ...other properties
-      // role: UserRole;
+      role: UserRole;
+      profile: string;
     };
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+  interface User {
+    // ...other properties
+    role: UserRole;
+    // profile: string;
+  }
 }
 
 /**
@@ -46,14 +55,29 @@ export const authOptions: NextAuthOptions = {
     // 30 minutes
     maxAge: 30 * 60,
   },
+  secret: process.env.JWT_SECRET,
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
+    jwt: ({ token, user }) => {
+      if (user) {
+        return {
+          ...token,
+          role: user.role,
+          user: user,
+          picture: user.image,
+        };
+      }
+
+      return token;
+    },
+    session: ({ session, token }) => {
+      if (token) {
+        return {
+          ...session,
+          user: token.user,
+        } as any;
+      }
+      return session;
+    },
   },
   adapter: PrismaAdapter(db),
   providers: [
@@ -79,18 +103,40 @@ export const authOptions: NextAuthOptions = {
         // You can also use the `req` object to obtain additional parameters
         // (i.e., the request IP address)
 
-        console.log(credentials);
-
-        const res = await api.auth.login
-          .useMutation()
-          .mutateAsync(credentials as LoginInput);
-
-        // If no error and we have user data, return it
-        if (res) {
-          return res;
+        if (!credentials?.email || !credentials?.password) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Имэйл эсвэл нууц үг хоосон байна",
+          });
         }
-        // Return null if user data could not be retrieved
-        console.log("fuck you");
+
+        const userData = await db.user.findUnique({
+          where: { email: credentials.email },
+        });
+
+        if (!userData) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Хэрэглэгч олдсонгүй",
+          });
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const passwordMatch = bcrypt.compare(
+          credentials.password,
+          userData.password ?? "",
+        );
+
+        if (userData && (await passwordMatch)) {
+          return {
+            id: userData.id,
+            email: userData.email,
+            name: userData.name,
+            role: userData.role,
+            picture: userData.image,
+          };
+        }
+
         return null;
       },
     }),

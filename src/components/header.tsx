@@ -2,24 +2,20 @@
 
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import Image from "next/image";
-
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Menu } from "lucide-react";
 import { Button } from "./ui/button";
 import LoginButton from "./auth/loginButton";
-// import LoginButton from "./login_modal";
+import { useSession } from "next-auth/react";
+import ProfileMenu from "./navbar/profileMenu";
 
 const Header = () => {
   const [opened, setOpened] = useState(false);
   const pathName = usePathname();
   const isHome = pathName === "/";
+  const { data: session } = useSession();
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-b-gray-200 bg-white bg-opacity-25 backdrop-blur-md">
@@ -52,7 +48,11 @@ const Header = () => {
 
         <div className="hidden items-center lg:flex lg:gap-x-12"></div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-          <LoginButton />
+          {!session?.user ? (
+            <LoginButton />
+          ) : (
+            <ProfileMenu profile={session?.user?.profile} />
+          )}
           {/* <div>test</div> */}
         </div>
       </nav>
@@ -77,8 +77,37 @@ const Header = () => {
               </a> */}
             </nav>
             <div className=" mt-4 w-full border-t border-t-gray-200 pt-4">
-              <LoginButton />
-              {/* <div>test</div> */}
+              {!session?.user ? (
+                <LoginButton />
+              ) : (
+                <Image
+                  src={session?.user?.profile ?? "/images/default_avatar.jpg"}
+                  alt="avatar"
+                  width={40}
+                  height={40}
+                  className={`dark:drop-shadow-gray-600
+                  dark:drop-shadow-opacity-75
+                  dark:drop-shadow-offset-y-2
+                  dark:drop-shadow-offset-x-2
+                  dark:drop-shadow-blur-2
+                  dark:drop-shadow-spread-2
+                  h-10
+                  w-10
+                  rounded-full
+                  border-2
+                  border-gray-600
+                  object-cover
+                  dark:border-gray-400
+                  dark:bg-gray-800
+                  dark:bg-opacity-25
+                  dark:opacity-75
+                  dark:blur-md
+                  dark:drop-shadow-lg
+                  dark:invert
+                  dark:filter
+                  `}
+                />
+              )}
             </div>
           </div>
         </DialogContent>
