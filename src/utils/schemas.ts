@@ -17,3 +17,9 @@ export const registerSchema = z.object({
 });
 
 export type RegisterInput = z.infer<typeof registerSchema>;
+
+export const signUrlSchema = z.object({
+  filename: z.string(),
+  filetype: z.string().default("application/pdf"),
+  size: z.number().optional().default(0),
+});

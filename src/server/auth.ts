@@ -103,6 +103,8 @@ export const authOptions: NextAuthOptions = {
         // You can also use the `req` object to obtain additional parameters
         // (i.e., the request IP address)
 
+        console.log(req);
+
         if (!credentials?.email || !credentials?.password) {
           throw new TRPCError({
             code: "BAD_REQUEST",

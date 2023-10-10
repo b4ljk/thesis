@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { loginSchema } from "~/utils/schemas";
