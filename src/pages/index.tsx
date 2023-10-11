@@ -6,27 +6,13 @@ import { api } from "~/utils/api";
 import { type ChangeEvent, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
+import { downloadFileFromS3, uploadToSignedUrl } from "~/lib/awsHelper";
+
+const bucketName = "thesis-cloudsign";
 
 export default function Home() {
   // const hello = api.example.hello.useQuery({ text: "hello world" });
   const preSign = api.s3Router.getSignedUrl.useMutation();
-
-  const getPresSignedUrl = async ({
-    filename,
-    filetype,
-    size,
-  }: {
-    filename: string;
-    filetype: string;
-    size: number;
-  }) => {
-    const _response = await preSign.mutateAsync({
-      filename,
-      filetype,
-      size,
-    });
-    return _response;
-  };
 
   const handleFileUpload = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -38,23 +24,25 @@ export default function Home() {
     console.log(filesize);
     console.log(name, type, size);
     // console.log(filename, filetype, filesize);
-    const uploadUrl = await getPresSignedUrl({
+
+    const signedUploadUrl = await preSign.mutateAsync({
       filename: name,
       filetype: type,
       size: filesize,
     });
 
-    if (!uploadUrl || !file) {
+    if (!signedUploadUrl || !file) {
       console.log("Upload URL has not been set or no file selected.");
       return;
     }
-    const headers = new Headers();
-    headers.append("Content-Type", type);
-    const response = await fetch(uploadUrl, {
-      method: "PUT",
-      headers: headers,
-      body: file,
+    uploadToSignedUrl({
+      signedUploadUrl: signedUploadUrl,
+      file,
     });
+  };
+
+  const downloadPdf = () => {
+    window.open(`/api/signing/download?filename=Logo.svg`);
   };
 
   return (
@@ -66,6 +54,7 @@ export default function Home() {
       </Head>
       <main className="flex flex-1">
         <Input type="file" onChange={handleFileUpload} />
+        <Button onClick={downloadPdf}>Download</Button>
       </main>
     </div>
   );

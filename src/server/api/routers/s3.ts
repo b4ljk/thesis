@@ -18,6 +18,20 @@ interface GetSignedUrlInput {
   params: aws.S3.PresignedPost.Params;
 }
 
+function getPresignedPost({
+  s3,
+  params,
+}: GetSignedUrlInput): Promise<PresignedPost> {
+  return new Promise<PresignedPost>((resolve, reject) => {
+    s3.createPresignedPost(params, function (err, data) {
+      if (err) {
+        return reject(err);
+      }
+      resolve(data);
+    });
+  });
+}
+
 function getPresignUrlPromiseFunction(
   s3: aws.S3,
   s3Params: unknown,
@@ -49,26 +63,29 @@ export const s3Router = createTRPCRouter({
       console.log(input);
 
       const s3 = new aws.S3();
-      const params = {
+      const params: PresignedPost.Params = {
         Bucket: process.env.S3_BUCKET,
         Fields: {
           key: input.filename,
+          "Content-Type": input.filetype,
+          acl: "public-read",
         },
         Conditions: [
+          { acl: "public-read" },
           ["content-length-range", 0, MAX_FILE_SIZE_BYTES],
-          { "Content-Type": input.filetype },
+          // ["acl", "public-read"],
         ],
+        // ACL:'public-read',
         Expires: 120,
       };
 
-      const s3Params = {
-        Bucket: process.env.S3_BUCKET,
-        Key: input.filename,
-        Expires: 10,
-        ContentType: input.filetype,
-      };
+      const postPresignedUrl = await getPresignedPost({
+        s3,
+        params,
+      });
 
-      const signedUrl = await getPresignUrlPromiseFunction(s3, s3Params);
-      return signedUrl;
+      console.log(postPresignedUrl);
+
+      return postPresignedUrl;
     }),
 });

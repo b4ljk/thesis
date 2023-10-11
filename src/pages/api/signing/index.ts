@@ -1,75 +1,65 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable import/no-anonymous-default-export */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { type NextApiRequest, type NextApiResponse } from "next";
-import { getToken } from "next-auth/jwt";
-import { promises as fs } from "fs";
-import { createHash, createSign } from "crypto";
-import { PDFDocument, rgb, drawText, StandardFonts } from "pdf-lib";
+import { downloadFileFromS3 } from "~/lib/awsHelper";
+import { addSignatureToPDF, signPDF } from "~/lib/signing";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
-  const session = await getToken({
-    req: req,
-    secret: process.env.JWT_SECRET,
-  });
-  if (!session) return res.status(401).json({ message: "Unauthorized" });
+const private_key = `-----BEGIN PRIVATE KEY-----
+MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDjszAP6THQVQAB
+X58IDoYXbwkVT9HR4JI5gIXoT57CHhUX2GGPzvVeJ+DeJBh8ltqqaoazfIdmjWvW
+7nkwacYdNOKIIuVOV77jxgdcHzfVYh8MGQ7cYGX4i0vcuxM/UAiz8aUkiiPNpUww
+CSRaeFZmlB8sjrL1x9VPr0/lClVOwI7q7JvLnXNqk1XkbI9TZk4PEN5KeEM6Un7i
+3iwlvH3y1kaH0J2RnlmxowJrIY9F5JcV3l1AwkQ64STI4SE80Hnt4+sqlZN3CxHy
+jOztxoQ8c5Mx4gm4rvBh5cfN7knRLARWMQ1PfAmPUhVxHZYtK9sEI3S6L060ohZH
+Jx6i2x43AgMBAAECggEARqOi7/S01wBfsY1kLWAwGloAk+OA4N8ODhfAsyrsQiWJ
+/q1Kyw32EiFGAjRpglFcggztQAaMjPSntXSjFTFjXFE5S+mjgNP47PnU86/dpu27
+Wwn1Eco4KEyymsZQuM4P/R8kz/qpE9XJlodnh0eY6lbeevjELTqzAvcMzq4PfA/s
+DuclJmIp4MyJXBkH0dJXi7NP8kFMSh4LGDL8i4uhC1bMVMYF+KYdt+RFgI/aP4+F
+z8k5juOhWXSF6Cjq4+SycJDJmHfcp9RZM8h1qoY5RdB86zMSKPpp3jD+acJqmrQx
+86tdGvpeVmbFHXGIFwVzRLhX2fPBURoVyBckeubc1QKBgQD3CPedJIlyJnDHOqKC
+FgHz5jztQeG7bpftknP2v652HdOA/zp88d9A1NZXzHoFCV3feeqfKU0E7ReNG8Tm
+ywsO7QPv3wfYuPNxu3O6NO0YM6i5Roz8cEcbdozqeUWOvAbUP9LptHurM0aVOSHZ
+74WzEPhzCXhd2nIA7KjE14oKrQKBgQDr9pdyb4JARgMdY+V2ycoMJ+XepKKcemQe
+kQnoQfWr7beJVWky12lYguxEA+2YFOeAeWuGiZIQ1afOM1XyOR2SX4O6vH+ExH0W
+DJtnyDF05ex+BPFszMB2vC6Odj+ga0QXWn0t8eaPClhNIHYAsVf8UaH/8VNVfxDa
+Jz3bc9ps8wKBgFxLMF+4d9V7ASWeBXr+h+o8ucSWmaRyNDbhQYwNnzun9w45zPtD
+TnqlShNxZKEfF8BXh03Bm3HctrDUkCL99vqzmIX02LSinOl/9EO8ZFxnaIEYF7J0
+rExZZVpwxokGPLLtyXnhIVccCCHWP4xxzYzSKVCpWBwQcglgYclxEbTdAoGBAMb/
+Ub3auLhH0zyoEM7bYyBZTY00v0bEGUeF/hr39Z4nfo+9jlioPlm9IFBEF84YYxyA
+SeROhPbZmQlXVfZPoNbe4pNLgSeRJgTAYRdnR/5UIdwtgwXEr9Py5DiVFRfPHr+r
+OsLSrSSZDtsMszfmWFOc7MiS1zrVTHsOeSZoUB9tAoGBAMa3oeh4smdpoGi4hZtb
+0R0OXbvtqroAsF1t2wz8pzF3uPH44dyaJQwWhNOHI78VBYB2dTMLfxt3cKDOXMfH
+a/tipAonLYAz7H0HfvMG0kBASDC4pqYuOVer7mp5q0YATWRcHScMuFIkS3dWEVPS
+bKxB54qEbXKzCUMkMf2uBnZw
+-----END PRIVATE KEY-----`;
 
-  if (req.method !== "POST") {
-    return res
-      .status(405)
-      .json({ error: "Method not allowed, please use POST" });
-  }
-
-  const file = req.body.file;
-  let data;
-
+export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    data = Buffer.from(file, "base64"); // convert file to buffer
-  } catch (error) {
-    return res.status(400).json({ error: "Invalid file data" });
+    const pdfBuffer = await downloadFileFromS3(
+      process.env.S3_BUCKET!,
+      "Дасгал ажил 5.pdf",
+    );
+    console.log(pdfBuffer);
+    const signature = signPDF(pdfBuffer.Body as Buffer, private_key);
+    if (!pdfBuffer || !signature) {
+      throw new Error("PDF or signature is missing");
+    }
+    console.log(signature);
+    const signedPDFBuffer = await addSignatureToPDF(
+      pdfBuffer.Body as Buffer,
+      signature,
+    );
+
+    // TODO: Upload the signed PDF back to S3 or send it to the client as needed
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=tailan-signed.pdf",
+    );
+    res.send(signedPDFBuffer);
+  } catch (error: unknown) {
+    res.status(500).json({ error: error?.toString() });
   }
-
-  try {
-    // Create hash and sign the hash
-    const hash = createHash("sha256");
-    hash.update(data);
-    const hashedData = hash.digest("hex");
-
-    const sign = createSign("SHA256");
-    sign.update(hashedData);
-    const privateKey = fs.readFileSync("path/to/your/private_key.pem"); // Replace 'path/to/your/private_key.pem' with your private key path
-    const signature = sign.sign(privateKey, "hex");
-
-    // Load PDF document
-    const pdfDoc = await PDFDocument.load(data);
-
-    // Embed the signature into the PDF
-    const pages = pdfDoc.getPages();
-    const firstPage = pages[0];
-    const { width, height } = firstPage.getSize();
-    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-    const textSize = 20;
-    const textWidth = font.widthOfTextAtSize(signature, textSize);
-    const textHeight = font.heightOfTextAtSize(textSize);
-    firstPage.drawText(signature, {
-      x: width / 2 - textWidth / 2,
-      y: height - textHeight * 2,
-      size: textSize,
-      font,
-      color: rgb(0, 0, 0),
-    });
-
-    // Save the PDF with the embedded signature
-    const pdfBytes = await pdfDoc.save();
-
-    // Response with the signed PDF
-    res.status(200).json({ signedPdf: pdfBytes.toString("base64") });
-  } catch (error) {
-    console.error(error);
-    return res
-      .status(500)
-      .json({ error: "An error occurred while processing your file" });
-  }
-
-  res.status(200).json({ name: "John Doe" });
-}
+};
