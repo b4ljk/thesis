@@ -4,6 +4,6 @@ type CenterProps = {
 
 export default function Center({ children }: CenterProps) {
   return (
-    <div className="flex flex-1 items-center justify-center">{children}</div>
+    <div className="flex flex-1 items-center justify-center ">{children}</div>
   );
 }

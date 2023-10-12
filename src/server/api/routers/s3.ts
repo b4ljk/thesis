@@ -53,14 +53,13 @@ function getPresignUrlPromiseFunction(
 export const s3Router = createTRPCRouter({
   getSignedUrl: protectedProcedure
     .input(signUrlSchema)
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       if (input.size > MAX_FILE_SIZE_BYTES) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: `Файлын хэмжээ ${MAX_FILE_SIZE_MB} MB-ээс их байна`,
         });
       }
-      console.log(input);
 
       const s3 = new aws.S3();
       const params: PresignedPost.Params = {
@@ -68,15 +67,13 @@ export const s3Router = createTRPCRouter({
         Fields: {
           key: input.filename,
           "Content-Type": input.filetype,
-          acl: "public-read",
         },
         Conditions: [
-          { acl: "public-read" },
           ["content-length-range", 0, MAX_FILE_SIZE_BYTES],
           // ["acl", "public-read"],
         ],
         // ACL:'public-read',
-        Expires: 120,
+        Expires: 20,
       };
 
       const postPresignedUrl = await getPresignedPost({
@@ -84,7 +81,15 @@ export const s3Router = createTRPCRouter({
         params,
       });
 
-      console.log(postPresignedUrl);
+      const dbResponse = await ctx.db.userUploadedFiles.create({
+        data: {
+          fileName: input.filename,
+          filePath: postPresignedUrl.url,
+          userId: ctx.session.user.id,
+        },
+      });
+
+      console.log(dbResponse);
 
       return postPresignedUrl;
     }),

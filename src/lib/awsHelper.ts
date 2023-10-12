@@ -4,22 +4,50 @@ import { s3 } from "~/utils/aws";
 export const uploadToSignedUrl = async ({
   signedUploadUrl,
   file,
+  setUploadProgress,
+  index,
 }: {
   signedUploadUrl: PresignedPost;
   file: File;
-}) => {
-  const form = new FormData();
+  setUploadProgress: React.Dispatch<React.SetStateAction<number[]>>;
+  index: number;
+}): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const formData = new FormData();
+    Object.keys(signedUploadUrl.fields).forEach((key) =>
+      formData.append(key, signedUploadUrl.fields[key]!),
+    );
+    formData.append("file", file);
 
-  Object.keys(signedUploadUrl.fields).forEach((key) =>
-    form.append(key, signedUploadUrl.fields[key]!),
-  );
-  form.append("file", file);
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", signedUploadUrl.url, true);
 
-  const response = await fetch(signedUploadUrl.url, {
-    method: "POST",
-    body: form,
+    xhr.upload.addEventListener("progress", (event) => {
+      if (event.lengthComputable) {
+        const percentComplete = (event.loaded / event.total) * 100;
+        console.log(`Upload is ${percentComplete}% done.`);
+        setUploadProgress((prev) => {
+          const newProgress = [...prev];
+          newProgress[index] = percentComplete;
+          return newProgress;
+        });
+      }
+    });
+
+    xhr.onload = () => {
+      if (xhr.status > 199 && xhr.status < 300) {
+        resolve();
+      } else {
+        reject(`Error: ${xhr.status}`);
+      }
+    };
+
+    xhr.onerror = () => {
+      reject(`Error: ${xhr.status}`);
+    };
+
+    xhr.send(formData);
   });
-  console.log(response);
 };
 
 export const downloadFileFromS3 = async (

@@ -59,15 +59,16 @@ enum Role {
 }
 
 model User {
-    id            String    @id @default(cuid())
-    email         String    @unique
-    password      String    @db.Text
-    name          String?
-    emailVerified DateTime?
-    image         String?
-    role          Role      @default(USER)
-    accounts      Account[]
-    sessions      Session[]
+    id                String              @id @default(cuid())
+    email             String              @unique
+    password          String              @db.Text
+    name              String?
+    emailVerified     DateTime?
+    image             String?
+    role              Role                @default(USER)
+    accounts          Account[]
+    sessions          Session[]
+    UserUploadedFiles UserUploadedFiles[]
 }
 
 model VerificationToken {
@@ -76,4 +77,16 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model UserUploadedFiles {
+    id        String   @id @default(cuid())
+    userId    String
+    fileName  String
+    filePath  String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
 }
