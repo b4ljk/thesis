@@ -3,6 +3,11 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
 import aws from "aws-sdk";
 
+aws.config.update({
+  accessKeyId: process.env.S3_ACCESS_KEY,
+  secretAccessKey: process.env.S3_SECRET,
+  region: process.env.AWS_REGION,
+});
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   const s3 = new aws.S3();
 
