@@ -35,11 +35,15 @@ const Upload: React.FC<UploadProps> = ({ children }) => {
     let index = 0;
     for (const file of files) {
       const { name, type, size } = file;
-      const signedUploadUrl = await preSign.mutateAsync({
-        filename: name,
-        filetype: type,
-        size: size,
-      });
+      const signedUploadUrl = await preSign
+        .mutateAsync({
+          filename: name,
+          filetype: type,
+          size: size,
+        })
+        .catch((err) => {
+          console.log(err);
+        });
       if (!signedUploadUrl || !file) {
         console.log("Upload URL has not been set or no file selected.");
         return;
@@ -83,7 +87,7 @@ const Upload: React.FC<UploadProps> = ({ children }) => {
                 <div
                   className="group relative flex max-h-40 w-40 flex-col rounded-md border-2 
                   border-slate-200 p-1 shadow-sm transition-colors 
-                  duration-200 hover:border-primary hover:bg-slate-100"
+                  duration-200 hover:border-primary hover:bg-slate-100 dark:hover:bg-slate-800"
                   key={file.name}
                 >
                   <FileText size={32} className="m-auto" />

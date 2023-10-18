@@ -6,43 +6,57 @@ import { type NextApiRequest, type NextApiResponse } from "next";
 import { downloadFileFromS3 } from "~/lib/awsHelper";
 import { addSignatureToPDF, signPDF } from "~/lib/signing";
 
-const private_key = `-----BEGIN PRIVATE KEY-----
-MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDjszAP6THQVQAB
-X58IDoYXbwkVT9HR4JI5gIXoT57CHhUX2GGPzvVeJ+DeJBh8ltqqaoazfIdmjWvW
-7nkwacYdNOKIIuVOV77jxgdcHzfVYh8MGQ7cYGX4i0vcuxM/UAiz8aUkiiPNpUww
-CSRaeFZmlB8sjrL1x9VPr0/lClVOwI7q7JvLnXNqk1XkbI9TZk4PEN5KeEM6Un7i
-3iwlvH3y1kaH0J2RnlmxowJrIY9F5JcV3l1AwkQ64STI4SE80Hnt4+sqlZN3CxHy
-jOztxoQ8c5Mx4gm4rvBh5cfN7knRLARWMQ1PfAmPUhVxHZYtK9sEI3S6L060ohZH
-Jx6i2x43AgMBAAECggEARqOi7/S01wBfsY1kLWAwGloAk+OA4N8ODhfAsyrsQiWJ
-/q1Kyw32EiFGAjRpglFcggztQAaMjPSntXSjFTFjXFE5S+mjgNP47PnU86/dpu27
-Wwn1Eco4KEyymsZQuM4P/R8kz/qpE9XJlodnh0eY6lbeevjELTqzAvcMzq4PfA/s
-DuclJmIp4MyJXBkH0dJXi7NP8kFMSh4LGDL8i4uhC1bMVMYF+KYdt+RFgI/aP4+F
-z8k5juOhWXSF6Cjq4+SycJDJmHfcp9RZM8h1qoY5RdB86zMSKPpp3jD+acJqmrQx
-86tdGvpeVmbFHXGIFwVzRLhX2fPBURoVyBckeubc1QKBgQD3CPedJIlyJnDHOqKC
-FgHz5jztQeG7bpftknP2v652HdOA/zp88d9A1NZXzHoFCV3feeqfKU0E7ReNG8Tm
-ywsO7QPv3wfYuPNxu3O6NO0YM6i5Roz8cEcbdozqeUWOvAbUP9LptHurM0aVOSHZ
-74WzEPhzCXhd2nIA7KjE14oKrQKBgQDr9pdyb4JARgMdY+V2ycoMJ+XepKKcemQe
-kQnoQfWr7beJVWky12lYguxEA+2YFOeAeWuGiZIQ1afOM1XyOR2SX4O6vH+ExH0W
-DJtnyDF05ex+BPFszMB2vC6Odj+ga0QXWn0t8eaPClhNIHYAsVf8UaH/8VNVfxDa
-Jz3bc9ps8wKBgFxLMF+4d9V7ASWeBXr+h+o8ucSWmaRyNDbhQYwNnzun9w45zPtD
-TnqlShNxZKEfF8BXh03Bm3HctrDUkCL99vqzmIX02LSinOl/9EO8ZFxnaIEYF7J0
-rExZZVpwxokGPLLtyXnhIVccCCHWP4xxzYzSKVCpWBwQcglgYclxEbTdAoGBAMb/
-Ub3auLhH0zyoEM7bYyBZTY00v0bEGUeF/hr39Z4nfo+9jlioPlm9IFBEF84YYxyA
-SeROhPbZmQlXVfZPoNbe4pNLgSeRJgTAYRdnR/5UIdwtgwXEr9Py5DiVFRfPHr+r
-OsLSrSSZDtsMszfmWFOc7MiS1zrVTHsOeSZoUB9tAoGBAMa3oeh4smdpoGi4hZtb
-0R0OXbvtqroAsF1t2wz8pzF3uPH44dyaJQwWhNOHI78VBYB2dTMLfxt3cKDOXMfH
-a/tipAonLYAz7H0HfvMG0kBASDC4pqYuOVer7mp5q0YATWRcHScMuFIkS3dWEVPS
-bKxB54qEbXKzCUMkMf2uBnZw
------END PRIVATE KEY-----`;
+const private_key = `-----BEGIN RSA PRIVATE KEY-----
+MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDFMqe4+wDWmewb
+zrMCPpHLNp6Qh7wh0h7UmPf92A2W41r9TN0h7CtuVJoGhCwsytQeJXvSnlXXTPLd
+tnvRkmA7JFvCRNoGymPBX6Lwe1NRi0P8mOQG8mreaJ4zbV2rd7TutOeGn766A7QB
+u6JRO/UAgRfRFiSkQZiWZw8BI3+XHvaWks4AE5sowD02UfVWIRZ7A583nItzf3FI
+RgW5CCc95Lzk5i/hYon01eAxV0Z6dlTq5Ri1txxo0GZY3p9hWk+PwethDRTntrNB
+5y7a7Guy0A8JaRgliOfsgP4XBCngBzns+gi7FhIHPk2OaNbVHvPxahM7q0rnhSO9
+NIMOshbJAgMBAAECggEAbGdTUloRdOd6pzKyr0osJXUqJ7OmVUVIE4Df2xi5J7hm
+HZbyfSJyIZ26aligXCNIBiZ+8iJ+d/PiEsWtPWDlK73p/1qQLGl3+yaS0PZKsCoJ
+vsNhnvwGiasjRIwbkRYmTY7/M79/PoyomMdIDLYUEinlKNiuXel9czjGQ8765dx1
+kBaNZBA25pz5RwvWsZ6+W3/Z4s9eFjWzW4J+KKykPyd40LDHajFMYPiDh647O3Vh
+WwKYQLfzyNJbvNzNNik8NmfGHLpGrHugF0t8B6E7XjAdqnICqLZQGC92NLsJgBbP
+xl90r0Y2vdicmqsDQ21iREW6ctQkIZWJ2dTs7eJrsQKBgQDjUie76wK8KtCAppRv
+55VGgNUjlEqal/6EDlzu3EccflpRIeO1sbfOyTZ0cM4c1znz3wzzHcNI0qwUWewY
+VcjtIv3nVHqQygJoAvNHG34bwdSulYIB+rnBvG9AB0VsQpE94C/ct/gU/tW0/7j7
+i7aIzKfIuTX8L7uFPOa4kMyMLQKBgQDeE5uZh0BjPvgvpYacDamtnKsCUPZXSH5d
+U1YHyFylG8o7KDS8WSx//dV2w8Gj2FcR2XxqnBudhSwY3vXd4MuHRytJnkYMQ7fU
+GpTOaGIaxAqiSKjBAaNzMlp5dC0tVqDTiA8niZZyDOlAAM0pTEnJpVS8cJNt3yJ3
+fOFmrZ+qjQKBgQC/g8GyEmb1fOS43p8EQImFIplvJkpMQG3PeAJXwwGuQc15uSGN
+PDLtZpwYMcmUhsdubKcOVC7otYUAiFnejrd/AhIDySqRvX+VfZbUe5cdb4ntpEwp
+usCxNj5MJVQZx2NyS+RHAj9iAOivWxrP4n9gdXuOImwXEWfc8tg2+tc56QKBgAfB
+pZCiMbSFsYNwg5gVvhRrQWnOTBxWUtuNmpag/+NgahrQ166waqZ5xifkxHGlj7z2
+3KqYkzpYOWcQ+oNqY5FxAekLVyT8hIIq/4GKEcsfh8ONSB+doAjY/GH7lcxclzds
+LCNUYeXP36G1pXTIzlb1qFUAlZWj0n9b5D+C1u3NAoGBALzSoKe3qvmZ0I58np7E
+5DRGYIIPPen/6wMk+TWkOXJVmioNlqLwu0GFvayt2cd18X3VxKQWXf8R6iQ19AEj
+fzmq7Gp+oAa+x8+pqQ7gTZ/DCM1Qd66P/0IxwnXekzL/HxHJeGb76ku0S3GDX2Xk
+Cx60Ok555TA2YBLZKdzuJjSO
+-----END RSA PRIVATE KEY-----`;
+
+const publicKey = `-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxTKnuPsA1pnsG86zAj6R
+yzaekIe8IdIe1Jj3/dgNluNa/UzdIewrblSaBoQsLMrUHiV70p5V10zy3bZ70ZJg
+OyRbwkTaBspjwV+i8HtTUYtD/JjkBvJq3mieM21dq3e07rTnhp++ugO0AbuiUTv1
+AIEX0RYkpEGYlmcPASN/lx72lpLOABObKMA9NlH1ViEWewOfN5yLc39xSEYFuQgn
+PeS85OYv4WKJ9NXgMVdGenZU6uUYtbccaNBmWN6fYVpPj8HrYQ0U57azQecu2uxr
+stAPCWkYJYjn7ID+FwQp4Ac57PoIuxYSBz5NjmjW1R7z8WoTO6tK54UjvTSDDrIW
+yQIDAQAB
+-----END PUBLIC KEY-----`;
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
+  const fileName = "Дасгал ажил 5.pdf";
   try {
     const pdfBuffer = await downloadFileFromS3(
       process.env.S3_BUCKET!,
-      "Дасгал ажил 5.pdf",
+      fileName,
     );
-    console.log(pdfBuffer);
-    const signature = signPDF(pdfBuffer.Body as Buffer, private_key);
+
+    // print readable buffer
+    console.log(pdfBuffer.Body?.toString("utf8"));
+
+    const signature = signPDF(pdfBuffer.Body as Buffer, private_key, publicKey);
     if (!pdfBuffer || !signature) {
       throw new Error("PDF or signature is missing");
     }
@@ -54,9 +68,16 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
     // TODO: Upload the signed PDF back to S3 or send it to the client as needed
     res.setHeader("Content-Type", "application/pdf");
+
+    // remove extension, and unwanted characters
+    const fileNameSigned =
+      fileName.split(".")?.[0]?.replace(/[^a-zA-Z0-9]/g, "_") + "_signed.pdf";
+
+    console.log(fileNameSigned);
+
     res.setHeader(
       "Content-Disposition",
-      "attachment; filename=tailan-signed.pdf",
+      `attachment; filename=${fileNameSigned}`,
     );
     res.send(signedPDFBuffer);
   } catch (error: unknown) {

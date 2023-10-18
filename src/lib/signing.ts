@@ -2,10 +2,15 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
+import { log } from "console";
 import forge from "node-forge";
 import { PDFDocument, StandardFonts } from "pdf-lib";
 
-export const signPDF = (pdfBuffer: Buffer, privateKey: string): string => {
+export const signPDF = (
+  pdfBuffer: Buffer,
+  privateKey: string,
+  publicKey: string,
+): string => {
   try {
     if (!(pdfBuffer instanceof Buffer)) {
       throw new Error("pdfBuffer must be a Buffer.");
@@ -17,6 +22,10 @@ export const signPDF = (pdfBuffer: Buffer, privateKey: string): string => {
 
     const md = forge.md.sha256.create();
     md.update(pdfBuffer.toString("utf8"), "utf8");
+    // print hash value
+    console.log("hash");
+    console.log(md.digest().bytes());
+    console.log("hash");
 
     let key;
     try {
@@ -26,6 +35,19 @@ export const signPDF = (pdfBuffer: Buffer, privateKey: string): string => {
     }
 
     const signature = key.sign(md);
+
+    // get hash value back from key signature
+    console.log("hash from signature");
+    console.log(forge.util.bytesToHex(signature));
+    console.log("hash from signature");
+
+    // verify signature
+    const publicKeyObj = forge.pki.publicKeyFromPem(publicKey);
+    const verified = publicKeyObj.verify(md.digest().bytes(), signature);
+    console.log("verified");
+    console.log(verified);
+    console.log("verified");
+
     return forge.util.encode64(signature);
   } catch (err) {
     console.error(err);

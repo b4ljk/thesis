@@ -1,7 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
- 
+
+ /*  chrome  */
+*::-webkit-scrollbar {
+  display: none;
+}
+/* firefox */
+* {
+  scrollbar-width: none;
+}
+/* edge */
+* {
+  -ms-overflow-style: none;
+}
 
 
 @layer base {
@@ -62,6 +74,8 @@
   }
 }
 
+
+
 /* @keyframes bounce {
   0%, 20%, 50%, 80%, 100% {
     transform: translateY(0);
@@ -91,3 +105,4 @@
     transform: translate(-15px, 30px);
   }
 }
+

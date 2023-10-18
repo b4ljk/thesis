@@ -47,12 +47,7 @@ export default function ProfileMenu({ profile }: ProfileMenuProps) {
           alt="avatar"
           width={40}
           height={40}
-          className={`dark:drop-shadow-gray-600
-                  dark:drop-shadow-opacity-75
-                  dark:drop-shadow-offset-y-2
-                  dark:drop-shadow-offset-x-2
-                  dark:drop-shadow-blur-2
-                  dark:drop-shadow-spread-2
+          className={`
                   h-14
                   w-14
                   rounded-full
@@ -61,12 +56,6 @@ export default function ProfileMenu({ profile }: ProfileMenuProps) {
                   object-cover
                   dark:border-gray-400
                   dark:bg-gray-800
-                  dark:bg-opacity-25
-                  dark:opacity-75
-                  dark:blur-md
-                  dark:drop-shadow-lg
-                  dark:invert
-                  dark:filter
                   `}
         />
         <div className="absolute bottom-0 right-0 rounded-full bg-slate-700">

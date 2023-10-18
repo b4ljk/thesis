@@ -12,22 +12,11 @@ interface UploadComponentType {
 export default function UploadComponent({
   handleNewFile,
 }: UploadComponentType) {
-  const [input, setInput] = useState("");
-  const [output, setOutput] = useState("");
-  const [key, setKey] = useState("");
-
-  const encryptionHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const encrypted = encryptMessage(e.target.value, key);
-    setOutput(encrypted);
-    setInput(e.target.value);
-  };
-
-  const decrypted = decryptMessage(output, key);
   return (
     <Center>
       <div className="flex-1">
         <Label className="cursor-pointer" htmlFor="file_upload">
-          <div className="flex h-56 flex-col items-center justify-center rounded-md border-2 border-dashed border-gray-300 transition-colors duration-200 hover:border-primary hover:bg-slate-100">
+          <div className="flex h-56 flex-col items-center justify-center rounded-md border-2 border-dashed border-gray-300 transition-colors duration-200 hover:border-primary hover:bg-slate-100 dark:hover:bg-slate-800">
             <div>
               <UploadCloud size={50} strokeWidth={2.5} />
             </div>
