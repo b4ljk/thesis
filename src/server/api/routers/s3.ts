@@ -62,17 +62,14 @@ export const s3Router = createTRPCRouter({
       }
 
       const s3 = new aws.S3();
+      const fileKey = "user_files/" + input.filename;
       const params: PresignedPost.Params = {
         Bucket: process.env.S3_BUCKET,
         Fields: {
-          key: input.filename,
+          key: fileKey,
           "Content-Type": input.filetype,
         },
-        Conditions: [
-          ["content-length-range", 0, MAX_FILE_SIZE_BYTES],
-          // ["acl", "public-read"],
-        ],
-        // ACL:'public-read',
+        Conditions: [["content-length-range", 0, MAX_FILE_SIZE_BYTES]],
         Expires: 20,
       };
 
@@ -83,7 +80,7 @@ export const s3Router = createTRPCRouter({
 
       const dbResponse = await ctx.db.userUploadedFiles.create({
         data: {
-          fileName: input.filename,
+          fileName: fileKey,
           filePath: postPresignedUrl.url,
           userId: ctx.session.user.id,
         },

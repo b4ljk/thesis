@@ -69,6 +69,8 @@ model User {
     accounts          Account[]
     sessions          Session[]
     UserUploadedFiles UserUploadedFiles[]
+    SignatureDigest   SignatureDigest[]
+    UserGeneratedKeys UserGeneratedKeys[]
 }
 
 model VerificationToken {
@@ -84,6 +86,30 @@ model UserUploadedFiles {
     userId    String
     fileName  String
     filePath  String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
+}
+
+model UserGeneratedKeys {
+    id             String   @id @default(cuid())
+    userId         String
+    publicKeyLink  String
+    privateKeyLink String
+    createdAt      DateTime @default(now())
+    updatedAt      DateTime @updatedAt
+    user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
+}
+
+model SignatureDigest {
+    id        String   @id @default(cuid())
+    fileName  String
+    userId    String
+    digest    String
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)

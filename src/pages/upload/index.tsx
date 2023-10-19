@@ -16,7 +16,7 @@ interface UploadProps {
 }
 const Upload: React.FC<UploadProps> = ({ children }) => {
   const [files, setFiles] = useState<File[]>([]);
-  const preSign = api.s3Router.getSignedUrl.useMutation();
+  const preSign = api.s3_router.getSignedUrl.useMutation();
   const [uploadProgress, setUploadProgress] = useState<number[]>([]);
 
   const handleNewFile = (event: ChangeEvent<HTMLInputElement>) => {

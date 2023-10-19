@@ -14,7 +14,7 @@ const bucketName = "thesis-cloudsign";
 
 export default function Home() {
   // const hello = api.example.hello.useQuery({ text: "hello world" });
-  const preSign = api.s3Router.getSignedUrl.useMutation();
+  const preSign = api.s3_router.getSignedUrl.useMutation();
 
   const downloadPdf = () => {
     window.open(`/api/signing/download?filename=tailan.pdf`);

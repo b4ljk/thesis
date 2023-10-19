@@ -60,8 +60,47 @@ export const downloadFileFromS3 = async (
     Bucket: bucketName,
     Key: fileName,
   };
+
   try {
     const data = await s3.getObject(params).promise();
+    return data;
+  } catch (error) {
+    throw new Error(`Could not retrieve file from S3: ${error as string}`);
+  }
+};
+
+export const uploadFiletoS3 = async (
+  bucketName: string,
+  fileName: string,
+  file: Buffer,
+) => {
+  const params = {
+    Bucket: bucketName,
+    Key: fileName,
+    Body: file,
+  };
+
+  try {
+    const data = await s3.putObject(params).promise();
+    return data;
+  } catch (error) {
+    throw new Error(`Could not upload file to S3: ${error as string}`);
+  }
+};
+
+export const s3OneTimeDownload = async (
+  bucketName: string,
+  fileName: string,
+  expiration = 7,
+) => {
+  const params = {
+    Bucket: bucketName,
+    Key: fileName,
+    Expires: expiration,
+  };
+
+  try {
+    const data = await s3.getSignedUrlPromise("getObject", params);
     return data;
   } catch (error) {
     throw new Error(`Could not retrieve file from S3: ${error as string}`);

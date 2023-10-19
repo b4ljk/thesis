@@ -17,6 +17,13 @@ const config = {
     "@typescript-eslint/consistent-type-definitions": "off",
     "@typescript-eslint/no-floating-promises": 0,
     "@typescript-eslint/restrict-template-expressions": "off",
+    // misused promises
+    "@typescript-eslint/no-misused-promises": [
+      "error",
+      {
+        checksVoidReturn: false,
+      },
+    ],
 
     "@typescript-eslint/consistent-type-imports": [
       "warn",
