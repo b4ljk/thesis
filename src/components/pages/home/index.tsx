@@ -32,15 +32,13 @@ export default function HeroHeader() {
         </div>
         <div className="flex gap-2">
           <Link
-            href="https://github.com/redpangilinan/next-shadcn-landing"
-            target="_blank"
+            href="/upload"
             className={`w-[10rem] ${cn(buttonVariants({ size: "lg" }))}`}
           >
             Туршиж үзэх
           </Link>
           <Link
-            href="https://github.com/redpangilinan/next-shadcn-landing"
-            target="_blank"
+            href="/key/create"
             className={`w-[10rem] ${cn(
               buttonVariants({ size: "lg", variant: "outline" }),
             )}`}
@@ -49,7 +47,7 @@ export default function HeroHeader() {
           </Link>
         </div>
       </div>
-      <div className="animate-randomBounce relative mt-0  flex-1">
+      <div className="relative mt-0 flex-1  animate-randomBounce">
         <Image
           src="/cloud.png"
           width={1024}

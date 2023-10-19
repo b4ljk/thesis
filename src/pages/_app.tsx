@@ -18,7 +18,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
       <div className="min-h-screen w-full pt-[90px]">
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
+          defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >

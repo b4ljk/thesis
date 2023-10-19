@@ -17,7 +17,7 @@ export type ContentSection = {
 
 export const featureCards: ContentSection = {
   header: `Powered by`,
-  subheader: `What makes Next Landing possible`,
+  subheader: ``,
   content: [
     {
       text: `Next.js`,

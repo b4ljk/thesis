@@ -29,7 +29,7 @@ const Header = () => {
               <Image
                 height={80}
                 width={80}
-                className="h-12 w-auto object-cover dark:invert"
+                className="h-12 w-auto object-cover"
                 src="/images/logo.png"
                 alt="logo"
               />
@@ -37,16 +37,12 @@ const Header = () => {
             </div>
           </Link>
         </div>
-        {!isHome && (
-          <div className="mx-4 mr-4 md:mr-8">{/* <SearchBar sm /> */}</div>
-        )}
+        {/* <Link href={"/upload"}>Ашиглах</Link> */}
         <div className="flex lg:hidden">
           <Button variant="outline" onClick={() => setOpened(true)}>
             <Menu size={24} />
           </Button>
         </div>
-
-        <div className="hidden items-center lg:flex lg:gap-x-12"></div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
           {!session?.user ? (
             <LoginButton />
