@@ -7,14 +7,21 @@
  */
 import { TRPCClientError, httpBatchLink, loggerLink } from "@trpc/client";
 import { createTRPCNext } from "@trpc/next";
-import { type inferRouterInputs, type inferRouterOutputs } from "@trpc/server";
+import {
+  TRPCError,
+  type inferRouterInputs,
+  type inferRouterOutputs,
+} from "@trpc/server";
 import superjson from "superjson";
 
 import { type AppRouter } from "~/server/api/root";
 import { MutationCache, QueryCache, QueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { type TRPCErrorShape } from "@trpc/server/rpc";
+import { TRPC_ERROR_CODES_BY_KEY, type TRPCErrorShape } from "@trpc/server/rpc";
 import { getError } from "~/lib/utils";
+import { useModalStore } from "~/stores";
+
+const modalHandler = useModalStore.getState();
 
 const getBaseUrl = () => {
   if (typeof window !== "undefined") return ""; // browser should use relative url
@@ -25,12 +32,18 @@ const getBaseUrl = () => {
 const queryClient = new QueryClient({
   queryCache: new QueryCache({
     onError: (err) => {
-      toast.error("Алдаа гарлаа");
+      toast.error(getError(err));
     },
   }),
   mutationCache: new MutationCache({
     onError: (error) => {
       toast.error(getError(error));
+      if (error instanceof TRPCClientError) {
+        const err = error.shape as TRPCErrorShape;
+        if (err.code === TRPC_ERROR_CODES_BY_KEY.UNAUTHORIZED) {
+          modalHandler.setModal(!modalHandler.isModalOpen);
+        }
+      }
     },
   }),
   defaultOptions: {

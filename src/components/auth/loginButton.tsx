@@ -29,10 +29,13 @@ import { api } from "~/utils/api";
 import toast from "react-hot-toast";
 import { getHTTPStatusCode } from "@trpc/server/http";
 import { useRouter } from "next/router";
+import { useModalStore } from "~/stores";
 
 export default function LoginButton() {
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  // const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isLoginModal, setIsLoginModal] = useState(true);
+  const { isModalOpen: isLoginModalOpen, setModal: setIsLoginModalOpen } =
+    useModalStore();
   const handleModal = () => {
     setIsLoginModalOpen(!isLoginModalOpen);
   };
