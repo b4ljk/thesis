@@ -17,6 +17,7 @@ interface UploadProps {
 const Upload: React.FC<UploadProps> = ({ children }) => {
   const [files, setFiles] = useState<File[]>([]);
   const preSign = api.s3_router.getSignedUrl.useMutation();
+  const signFile = api.sign_router.signDocument.useMutation();
   const [uploadProgress, setUploadProgress] = useState<number[]>([]);
 
   const handleNewFile = (event: ChangeEvent<HTMLInputElement>) => {
@@ -56,6 +57,10 @@ const Upload: React.FC<UploadProps> = ({ children }) => {
       })
         .then(() => {
           toast.success("Амжилттай илгээлээ");
+          signFile.mutateAsync({
+            file_id: signedUploadUrl.db_id,
+            passphrase: "QWE!@#qwe123",
+          });
         })
         .catch((err) => {
           console.log(err);

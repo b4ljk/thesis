@@ -88,6 +88,6 @@ export const s3Router = createTRPCRouter({
 
       console.log(dbResponse);
 
-      return postPresignedUrl;
+      return { ...postPresignedUrl, file_key: fileKey, db_id: dbResponse.id };
     }),
 });

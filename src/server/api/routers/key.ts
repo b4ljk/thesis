@@ -55,10 +55,7 @@ export const secretKeyRoute = createTRPCRouter({
         Buffer.from(privateKey),
       );
 
-      const [publicKeyUrl, privateKeyUrl] = await Promise.all([
-        publicUploaded,
-        privateUploaded,
-      ])
+      const uploadedUrls = await Promise.all([publicUploaded, privateUploaded])
         .then((res) => {
           return res.map((r) => r);
         })
@@ -88,4 +85,13 @@ export const secretKeyRoute = createTRPCRouter({
         downloadUrl,
       };
     }),
+  checkIfKeyExists: protectedProcedure.query(async ({ ctx }) => {
+    const userId = ctx.session.user.id;
+    const existingPublicKey = await ctx.db.userGeneratedKeys.findFirst({
+      where: {
+        userId,
+      },
+    });
+    return existingPublicKey;
+  }),
 });
