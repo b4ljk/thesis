@@ -55,12 +55,13 @@ const Upload: React.FC<UploadProps> = ({ children }) => {
         setUploadProgress,
         index,
       })
-        .then(() => {
+        .then(async () => {
           toast.success("Амжилттай илгээлээ");
-          signFile.mutateAsync({
+          const response = await signFile.mutateAsync({
             file_id: signedUploadUrl.db_id,
             passphrase: "QWE!@#qwe123",
           });
+          window.open(response.downloadUrl, "_blank");
         })
         .catch((err) => {
           console.log(err);
