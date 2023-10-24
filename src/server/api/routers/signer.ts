@@ -5,7 +5,7 @@ import { TRPCError } from "@trpc/server";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { signUrlSchema } from "~/utils/schemas";
 import { s3 } from "~/utils/aws";
-import { signatureSchema } from "~/lib/schemas/signing";
+import { signatureSchema, verificationSchema } from "~/lib/schemas/signing";
 import { type GetObjectRequest } from "aws-sdk/clients/s3";
 import {
   downloadFileFromS3,
@@ -18,6 +18,8 @@ import { P12Signer } from "@signpdf/signer-p12";
 import signpdf from "@signpdf/signpdf";
 import fs from "fs";
 import { publicProcedure } from "../trpc";
+import { v4 as uuidv4 } from "uuid";
+import pdf from "pdf-parse";
 
 export const signerRoute = createTRPCRouter({
   signDocument: protectedProcedure
@@ -79,8 +81,9 @@ export const signerRoute = createTRPCRouter({
         key: privateKeyFile.Body as Buffer,
         passphrase: input.passphrase,
       });
-
+      const universal_id = uuidv4();
       const pdfBuffer = s3Obj.Body as Buffer;
+
       const serverSigner = new P12Signer(certificateBuffer, {
         passphrase: "QWE!@#qwe123",
       });
@@ -90,7 +93,7 @@ export const signerRoute = createTRPCRouter({
         reason: "CloudSign.mn-г ашиглан энэ баримтыг баталгаажуулав.",
         contactInfo: ctx.session.user.email ?? "info@cloudsign.mn",
         name: ctx.session.user.name ?? "CloudSign.mn",
-        location: "Ulaanbaatar, Mongolia",
+        location: universal_id,
       });
 
       const signedPdf = await signpdf.sign(pdfWithPlaceholder, serverSigner);
@@ -104,6 +107,7 @@ export const signerRoute = createTRPCRouter({
 
       const createdDigest = await ctx.db.signatureDigest.create({
         data: {
+          id: universal_id,
           digest: signature,
           userId: ctx.session.user.id,
           fileName: fileData.fileName,
@@ -127,5 +131,57 @@ export const signerRoute = createTRPCRouter({
       return { signature, downloadUrl };
     }),
 
-  // publicProcedure.
+  verifyDocument: publicProcedure
+    .input(verificationSchema)
+    .mutation(async ({ input, ctx }) => {
+      const fileData = await ctx.db.userUploadedFiles.findUnique({
+        where: {
+          id: input.file_id,
+        },
+      });
+
+      if (!fileData) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Файл олдсонгүй.",
+        });
+      }
+
+      const s3Obj = await downloadFileFromS3(
+        process.env.S3_BUCKET!,
+        fileData.fileName,
+      );
+
+      if (!s3Obj) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Файл олдсонгүй.",
+        });
+      }
+
+      const userKey = await ctx.db.userGeneratedKeys.findFirst({
+        where: {
+          userId: fileData.userId,
+        },
+      });
+
+      if (!userKey) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Хуурамч бичиг баримт илэрлээ.",
+        });
+      }
+
+      const publicKeyFile = await downloadFileFromS3(
+        process.env.S3_BUCKET!,
+        userKey.publicKeyLink,
+      );
+
+      if (!publicKeyFile) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Хуурамч бичиг баримт илэрлээ.",
+        });
+      }
+    }),
 });

@@ -20,7 +20,7 @@ export default function HeroHeader() {
     <section className="col container flex flex-col gap-4 pb-12 pt-4 text-center lg:flex-row lg:items-center lg:gap-8 ">
       <div className="flex flex-1 flex-col gap-4 text-center lg:gap-8">
         <div className="space-y-2">
-          <div className="relative">
+          <div className="relative overflow-hidden">
             <h1 className="text-start text-6xl font-black text-slate-800 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.4)] dark:text-slate-100 lg:text-7xl">
               {heroHeader.header}
             </h1>

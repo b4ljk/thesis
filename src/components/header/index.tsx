@@ -6,16 +6,21 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Menu } from "lucide-react";
-import { Button } from "./ui/button";
-import LoginButton from "./auth/loginButton";
+import { Button } from "../ui/button";
+import LoginButton from "../auth/loginButton";
 import { useSession } from "next-auth/react";
-import ProfileMenu from "./navbar/profileMenu";
+import ProfileMenu from "../navbar/profileMenu";
+import { NavigationMenuComponent } from "./navigationMenu";
 
 const Header = () => {
   const [opened, setOpened] = useState(false);
   const pathName = usePathname();
   const isHome = pathName === "/";
   const { data: session } = useSession();
+
+  const handleClose = () => {
+    setOpened(false);
+  };
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-b-gray-200 bg-white bg-opacity-25 backdrop-blur-md">
@@ -37,7 +42,10 @@ const Header = () => {
             </div>
           </Link>
         </div>
-        {/* <Link href={"/upload"}>Ашиглах</Link> */}
+        <NavigationMenuComponent
+          className="hidden md:block"
+          handleClose={handleClose}
+        />
         <div className="flex lg:hidden">
           <Button variant="outline" onClick={() => setOpened(true)}>
             <Menu size={24} />
@@ -49,60 +57,21 @@ const Header = () => {
           ) : (
             <ProfileMenu profile={session?.user?.profile} />
           )}
-          {/* <div>test</div> */}
         </div>
       </nav>
       <Dialog open={opened} onOpenChange={setOpened}>
-        <DialogContent>
+        <DialogContent className="h-full w-full">
           <div className="flex h-full flex-col justify-center overflow-y-auto bg-white px-4 pb-10 pt-6">
             <nav className="flex flex-col gap-y-4">
-              {/* <a
-                href={"https://huvaari.bagsh.space/"}
-                className="relative text-sm font-semibold leading-6 text-gray-900"
-              >
-                <div className="absolute -right-2 -top-4 rounded-bl-full rounded-tr-full bg-green-500 px-2 py-0.5 text-xs text-white opacity-75">
-                  Шинэ
-                </div>
-                Хуваарь үүсгэгч
-              </a>
-              <a
-                href={"https://huvaari.bagsh.space/"}
-                className="text-sm font-semibold leading-6 text-gray-900"
-              >
-                Холбоо барих
-              </a> */}
+              <NavigationMenuComponent handleClose={handleClose} />
             </nav>
             <div className=" mt-4 w-full border-t border-t-gray-200 pt-4">
               {!session?.user ? (
                 <LoginButton />
               ) : (
-                <Image
-                  src={session?.user?.profile ?? "/images/default_avatar.jpg"}
-                  alt="avatar"
-                  width={40}
-                  height={40}
-                  className={`dark:drop-shadow-gray-600
-                  dark:drop-shadow-opacity-75
-                  dark:drop-shadow-offset-y-2
-                  dark:drop-shadow-offset-x-2
-                  dark:drop-shadow-blur-2
-                  dark:drop-shadow-spread-2
-                  h-10
-                  w-10
-                  rounded-full
-                  border-2
-                  border-gray-600
-                  object-cover
-                  dark:border-gray-400
-                  dark:bg-gray-800
-                  dark:bg-opacity-25
-                  dark:opacity-75
-                  dark:blur-md
-                  dark:drop-shadow-lg
-                  dark:invert
-                  dark:filter
-                  `}
-                />
+                <div className="flex">
+                  <ProfileMenu profile={session?.user?.profile} />
+                </div>
               )}
             </div>
           </div>

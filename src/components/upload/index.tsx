@@ -7,10 +7,14 @@ import { UploadCloud } from "lucide-react";
 
 interface UploadComponentType {
   handleNewFile: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  title?: string;
+  subTitle?: string;
 }
 
 export default function UploadComponent({
   handleNewFile,
+  title = "Файл оруулах",
+  subTitle = "Гарын үсэг зурах бичиг баримтыг оруулна уу",
 }: UploadComponentType) {
   return (
     <Center>
@@ -20,10 +24,8 @@ export default function UploadComponent({
             <div>
               <UploadCloud size={50} strokeWidth={2.5} />
             </div>
-            <p className="my-2 text-2xl">Файл оруулах</p>
-            <p className=" text-gray-600">
-              Гарын үсэг зурах бичиг баримтыг оруулна уу
-            </p>
+            <p className="my-2 text-2xl">{title}</p>
+            <p className=" text-gray-600">{subTitle}</p>
           </div>
         </Label>
         {/* only allow pdf */}
