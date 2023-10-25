@@ -9,12 +9,14 @@ interface UploadComponentType {
   handleNewFile: (event: React.ChangeEvent<HTMLInputElement>) => void;
   title?: string;
   subTitle?: string;
+  icon?: React.ReactNode;
 }
 
 export default function UploadComponent({
   handleNewFile,
   title = "Файл оруулах",
   subTitle = "Гарын үсэг зурах бичиг баримтыг оруулна уу",
+  icon,
 }: UploadComponentType) {
   return (
     <Center>
@@ -22,7 +24,7 @@ export default function UploadComponent({
         <Label className="cursor-pointer" htmlFor="file_upload">
           <div className="flex h-56 flex-col items-center justify-center rounded-md border-2 border-dashed border-gray-300 transition-colors duration-200 hover:border-primary hover:bg-slate-100 dark:hover:bg-slate-800">
             <div>
-              <UploadCloud size={50} strokeWidth={2.5} />
+              {!icon ? <UploadCloud size={50} strokeWidth={2.5} /> : icon}
             </div>
             <p className="my-2 text-2xl">{title}</p>
             <p className=" text-gray-600">{subTitle}</p>

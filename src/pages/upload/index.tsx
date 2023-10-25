@@ -10,12 +10,14 @@ import { Button } from "~/components/ui/button";
 import toast from "react-hot-toast";
 import { Progress } from "@/components/ui/progress";
 import { set } from "react-hook-form";
+import { useRouter } from "next/router";
 
 interface UploadProps {
   children: ReactNode;
 }
 const Upload: React.FC<UploadProps> = ({ children }) => {
   const [files, setFiles] = useState<File[]>([]);
+  const router = useRouter();
   const preSign = api.s3_router.getSignedUrl.useMutation();
   const signFile = api.sign_router.signDocument.useMutation();
   const [uploadProgress, setUploadProgress] = useState<number[]>([]);
@@ -61,7 +63,8 @@ const Upload: React.FC<UploadProps> = ({ children }) => {
             file_id: signedUploadUrl.db_id,
             passphrase: "QWE!@#qwe123",
           });
-          window.open(response.downloadUrl, "_blank");
+          // open new page
+          router.replace(response.downloadUrl);
         })
         .catch((err) => {
           console.log(err);

@@ -20,6 +20,8 @@ import fs from "fs";
 import { publicProcedure } from "../trpc";
 import { v4 as uuidv4 } from "uuid";
 import pdf from "pdf-parse";
+import * as PDFJS from "pdfjs-dist";
+import { PDFDocument } from "pdf-lib";
 
 export const signerRoute = createTRPCRouter({
   signDocument: protectedProcedure
@@ -82,7 +84,15 @@ export const signerRoute = createTRPCRouter({
         passphrase: input.passphrase,
       });
       const universal_id = uuidv4();
-      const pdfBuffer = s3Obj.Body as Buffer;
+      let pdfBuffer = s3Obj.Body as Buffer;
+
+      const pdfDoc = await PDFDocument.load(pdfBuffer);
+      pdfDoc.setSubject(universal_id);
+      const pdfBytes = await pdfDoc.save({
+        useObjectStreams: false,
+        updateFieldAppearances: false,
+      });
+      pdfBuffer = Buffer.from(pdfBytes);
 
       const serverSigner = new P12Signer(certificateBuffer, {
         passphrase: "QWE!@#qwe123",
@@ -90,20 +100,23 @@ export const signerRoute = createTRPCRouter({
 
       const pdfWithPlaceholder = plainAddPlaceholder({
         pdfBuffer,
-        reason: "CloudSign.mn-г ашиглан энэ баримтыг баталгаажуулав.",
+        reason: `This document is signed by CloudSign.mn's server. Validation id is ${universal_id}.`,
         contactInfo: ctx.session.user.email ?? "info@cloudsign.mn",
         name: ctx.session.user.name ?? "CloudSign.mn",
-        location: universal_id,
+        location: "Ulaanbaatar, Mongolia",
       });
 
       const signedPdf = await signpdf.sign(pdfWithPlaceholder, serverSigner);
 
+      const hash = crypto.createHash("sha256").update(signedPdf).digest("hex");
+      console.log(true);
+      console.log("hash", hash);
+      console.log(true);
+
       const signer = crypto.createSign("RSA-SHA256");
-      signer.update(signedPdf);
+      signer.update(hash);
 
       const signature = signer.sign(privateKey, "hex");
-
-      console.log("signature", signature);
 
       const createdDigest = await ctx.db.signatureDigest.create({
         data: {
@@ -159,9 +172,46 @@ export const signerRoute = createTRPCRouter({
         });
       }
 
+      const pdfBuffer = s3Obj.Body as Buffer;
+
+      const hash = crypto.createHash("sha256").update(pdfBuffer).digest("hex");
+
+      const loadingTask = PDFJS.getDocument(
+        new Uint8Array(
+          pdfBuffer.buffer,
+          pdfBuffer.byteOffset,
+          pdfBuffer.byteLength,
+        ),
+      );
+
+      const pdf = await loadingTask.promise;
+      const metadata = (await pdf.getMetadata()).info as ObjectConstructor & {
+        Subject?: string;
+      };
+      const universal_id = metadata.Subject;
+      if (!universal_id) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Бүртгэлгүй бичиг баримт илэрлээ.",
+        });
+      }
+
+      const signature = await ctx.db.signatureDigest.findUnique({
+        where: {
+          id: universal_id,
+        },
+      });
+
+      if (!signature) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Бүртгэлгүй бичиг баримт илэрлээ.",
+        });
+      }
+
       const userKey = await ctx.db.userGeneratedKeys.findFirst({
         where: {
-          userId: fileData.userId,
+          userId: signature.userId,
         },
       });
 
@@ -183,5 +233,35 @@ export const signerRoute = createTRPCRouter({
           message: "Хуурамч бичиг баримт илэрлээ.",
         });
       }
+
+      const verifier = crypto.createVerify("RSA-SHA256");
+      verifier.update(hash);
+
+      const publicKeyObj = await downloadFileFromS3(
+        process.env.S3_BUCKET!,
+        userKey.publicKeyLink,
+      );
+
+      const publicKey = publicKeyObj.Body as Buffer;
+
+      const createdPublicKey = crypto.createPublicKey({
+        key: publicKey,
+      });
+
+      const isValid = verifier.verify(
+        createdPublicKey,
+        signature.digest,
+        "hex",
+      );
+
+      if (isValid) {
+        console.log("The signature is valid");
+      } else {
+        console.log("The signature is not valid");
+      }
+
+      return {
+        validity: isValid,
+      };
     }),
 });
