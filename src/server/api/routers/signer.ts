@@ -260,8 +260,16 @@ export const signerRoute = createTRPCRouter({
         console.log("The signature is not valid");
       }
 
+      const userData = await ctx.db.user.findUnique({
+        where: {
+          id: signature.userId,
+        },
+      });
+
       return {
         validity: isValid,
+        user: userData,
+        signedDate: signature.createdAt,
       };
     }),
 });

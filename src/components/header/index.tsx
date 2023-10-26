@@ -70,7 +70,7 @@ const Header = () => {
                 <LoginButton />
               ) : (
                 <div className="flex">
-                  <ProfileMenu profile={session?.user?.profile} />
+                  <ProfileMenu profile={session?.user?.image} />
                 </div>
               )}
             </div>

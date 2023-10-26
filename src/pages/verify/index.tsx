@@ -1,3 +1,4 @@
+import { type Prisma } from "@prisma/client";
 import {
   FileLock2,
   FileText,
@@ -21,6 +22,11 @@ export default function Verify() {
     {
       validity: boolean;
       fileName: string;
+      createdAt?: Date;
+      owner?: Prisma.UserGetPayload<{
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        select?: any;
+      }>;
     }[]
   >([]);
   const preSign = api.s3_router.getSignedUrl.useMutation();
@@ -77,6 +83,8 @@ export default function Verify() {
                   {
                     validity: res.validity,
                     fileName: file.name,
+                    createdAt: res.signedDate,
+                    owner: res.user ?? undefined,
                   },
                 ]);
               } else {
@@ -176,13 +184,14 @@ export default function Verify() {
                 console.log("file", file);
                 return (
                   <div
-                    className="group relative flex max-h-40 w-40 flex-col rounded-md border-2 
+                    className="group relative flex w-60 flex-col rounded-md border-2 
                   border-slate-200 p-1 shadow-sm transition-colors 
                   duration-200 hover:border-primary hover:bg-slate-100 dark:hover:bg-slate-800"
                     key={file.fileName}
                   >
                     <FileLock2 size={32} className="m-auto text-green-700" />
                     <p className="line-clamp-1">{file.fileName}</p>
+                    <p className="line-clamp-1">{file.owner?.email}</p>
                   </div>
                 );
               })}

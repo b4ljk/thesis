@@ -36,7 +36,7 @@ import { signOut } from "next-auth/react";
 import { useRouter } from "next/router";
 
 interface ProfileMenuProps {
-  profile?: string;
+  profile?: string | null;
 }
 export default function ProfileMenu({ profile }: ProfileMenuProps) {
   return (
