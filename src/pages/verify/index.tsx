@@ -7,28 +7,43 @@ import {
   ShieldX,
   XCircle,
   ShieldQuestion,
+  BadgeCheck,
+  Check,
+  X,
 } from "lucide-react";
-import { type ChangeEvent, useState } from "react";
+import { type ChangeEvent, useState, type PropsWithChildren } from "react";
 import toast from "react-hot-toast";
 import { Button } from "~/components/ui/button";
 import { Progress } from "~/components/ui/progress";
 import UploadComponent from "~/components/upload";
 import { uploadToSignedUrl } from "~/lib/awsHelper";
 import { api } from "~/utils/api";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+
+interface FileInformation {
+  validity: boolean;
+  fileName: string;
+  createdAt?: Date;
+  owner?: Prisma.UserGetPayload<{
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    select?: any;
+  }>;
+}
 
 export default function Verify() {
   const [files, setFiles] = useState<File[]>([]);
-  const [validFiles, setValidFiles] = useState<
-    {
-      validity: boolean;
-      fileName: string;
-      createdAt?: Date;
-      owner?: Prisma.UserGetPayload<{
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        select?: any;
-      }>;
-    }[]
-  >([]);
+  const [validFiles, setValidFiles] = useState<FileInformation[]>([]);
   const preSign = api.s3_router.getSignedUrl.useMutation();
   const verifyFile = api.sign_router.verifyDocument.useMutation();
 
@@ -183,16 +198,13 @@ export default function Verify() {
               .map((file, index) => {
                 console.log("file", file);
                 return (
-                  <div
-                    className="group relative flex w-60 flex-col rounded-md border-2 
-                  border-slate-200 p-1 shadow-sm transition-colors 
-                  duration-200 hover:border-primary hover:bg-slate-100 dark:hover:bg-slate-800"
-                    key={file.fileName}
-                  >
-                    <FileLock2 size={32} className="m-auto text-green-700" />
-                    <p className="line-clamp-1">{file.fileName}</p>
-                    <p className="line-clamp-1">{file.owner?.email}</p>
-                  </div>
+                  <FileItem
+                    key={index}
+                    file={file}
+                    icon={
+                      <FileLock2 size={32} className="m-auto text-green-700" />
+                    }
+                  />
                 );
               })}
           </div>
@@ -210,15 +222,11 @@ export default function Verify() {
               .map((file, index) => {
                 console.log("file", file);
                 return (
-                  <div
-                    className="group relative flex max-h-40 w-40 flex-col rounded-md border-2 
-                  border-slate-200 p-1 shadow-sm transition-colors 
-                  duration-200 hover:border-primary hover:bg-slate-100 dark:hover:bg-slate-800"
-                    key={file.fileName}
-                  >
-                    <FileX2 size={30} className="m-auto text-red-600" />
-                    <p className="line-clamp-1">{file.fileName}</p>
-                  </div>
+                  <FileItem
+                    key={index}
+                    file={file}
+                    icon={<FileX2 size={30} className="m-auto text-red-600" />}
+                  />
                 );
               })}
           </div>
@@ -227,3 +235,99 @@ export default function Verify() {
     </div>
   );
 }
+
+interface FileItemProps {
+  icon: React.ReactNode;
+  file: FileInformation;
+}
+
+const FileItem: React.FC<PropsWithChildren<FileItemProps>> = ({
+  children,
+  icon,
+  file,
+}) => {
+  const [open, setOpen] = useState(false);
+  const handleClose = (setOpen: React.Dispatch<boolean>) => {
+    setOpen(false);
+  };
+
+  const ValidIcon = file.validity ? (
+    <Check size={24} strokeWidth={3} className="text-green-600" />
+  ) : (
+    <X size={26} strokeWidth={3} color="red" />
+  );
+  return (
+    <Dialog
+      onOpenChange={(e) => {
+        setOpen(e);
+      }}
+      open={open}
+    >
+      <DialogTrigger>
+        <div
+          className="group relative flex max-h-40 w-40 cursor-pointer flex-col rounded-md 
+border-2 border-slate-200 p-1 shadow-sm transition-colors
+duration-200 hover:border-primary hover:bg-slate-100 dark:hover:bg-slate-800"
+          key={file.fileName}
+        >
+          {icon}
+          <p className="line-clamp-1">{file.fileName}</p>
+        </div>
+      </DialogTrigger>
+      <DialogContent className="lg:max-w-xl">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-1">
+            <p className="text-2xl">Баталгаажуулалт</p>
+            <BadgeCheck color="white" size={30} fill="#17a3f2" />
+          </DialogTitle>
+          <DialogDescription>
+            Баталгаажсан бичиг баримтын мэдээлэл
+          </DialogDescription>
+        </DialogHeader>
+        {
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              {ValidIcon}
+              <Label>бичиг баримт хөндөгдөөгүй</Label>
+            </div>
+            <div className="flex items-center gap-2">
+              {ValidIcon}
+              {file.createdAt && (
+                <p className="text-sm font-bold">
+                  {file.createdAt?.toLocaleString()}
+                </p>
+              )}
+              <Label>Баталгаажуулалтын огноо</Label>
+            </div>
+            {file.owner && (
+              <div className="flex items-center gap-2">
+                {ValidIcon}
+                <p className="text-sm font-bold"> {file.owner?.email}</p>
+                <Label>баталгаажуулсан</Label>
+              </div>
+            )}
+            <div className="flex items-center gap-2">
+              {ValidIcon}
+              <p className="text-sm font-bold">CloudSign.mn</p>
+              <Label>баталгаажуулагч</Label>
+            </div>
+            <div className="flex items-center gap-2">
+              {ValidIcon}
+              <Label>Баталгаажуулалт</Label>
+            </div>
+          </div>
+        }
+
+        <DialogFooter>
+          <Button
+            onClick={() => {
+              handleClose(setOpen);
+            }}
+          >
+            Хаах
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
