@@ -1,11 +1,12 @@
 import Image from "next/image";
 import HeadingText from "@/components/ui/heading-text";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
+import { FolderLock, Globe2, Wallet } from "lucide-react";
 
 export type Content = {
   text: string;
   subtext: string;
-  image: string;
+  image: string | JSX.Element;
 };
 
 export type ContentSection = {
@@ -16,30 +17,30 @@ export type ContentSection = {
 };
 
 export const featureCards: ContentSection = {
-  header: `Powered by`,
-  subheader: ``,
+  header: `Давуу талууд`,
+  subheader: `Cloudsign ашигласнаар гарах давуу талууд.`,
   content: [
     {
-      text: `Next.js`,
-      subtext: `The React Framework`,
-      image: `/next.svg`,
+      text: `Хаанаас ч`,
+      subtext: `Дэлхийн хаанаас ч хамаагүй ашиглана.`,
+      image: <Globe2 strokeWidth={2} size={50} />,
     },
     {
-      text: `shadcn/ui`,
-      subtext: `Beautifully designed components`,
-      image: `/shadcn-ui.svg`,
+      text: `Найдвартай байдал`,
+      subtext: `Таны бичиг баримтыг баталгаажуулна.`,
+      image: <FolderLock strokeWidth={2} size={50} />,
     },
     {
-      text: `Vercel`,
-      subtext: `Develop. Preview. Ship.`,
-      image: `/vercel.svg`,
+      text: `Pay as you go`,
+      subtext: `Хэрэглэсэн хэмжээгээ төлнө.`,
+      image: <Wallet strokeWidth={2} size={50} />,
     },
   ],
 };
 
 export default function FeatureCards() {
   return (
-    <section className="bg-slate-50 dark:bg-slate-900">
+    <section className="bg-slate-100 dark:bg-slate-900">
       <div className="container space-y-8 py-12 text-center lg:py-20">
         {featureCards.header || featureCards.subheader ? (
           <HeadingText subtext={featureCards.subheader}>
@@ -54,14 +55,7 @@ export default function FeatureCards() {
             >
               {cards.image !== "" ? (
                 <div className="flex items-center justify-center">
-                  <div className="flex flex-1 bg-white">
-                    <Image
-                      src={cards.image}
-                      width={100}
-                      height={100}
-                      alt="Card image"
-                    />
-                  </div>
+                  <div className="flex flex-1 bg-white">{cards.image}</div>
                 </div>
               ) : (
                 <></>
