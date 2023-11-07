@@ -69,11 +69,29 @@ module.exports = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: 0 },
         },
+        typing: {
+          "0%": {
+            width: "0%",
+            visibility: "hidden",
+          },
+          "100%": {
+            width: "100%",
+          },
+        },
+        blink: {
+          "50%": {
+            borderColor: "transparent",
+          },
+          "100%": {
+            borderColor: "white",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         randomBounce: "randomBounce 12s ease-in-out infinite",
+        typing: "typing 2s steps(20), blink .7s infinite",
       },
     },
   },
@@ -109,6 +127,21 @@ module.exports = {
           },
         },
         ["responsive", "hover"] as any,
+      );
+    }),
+    plugin(({ matchUtilities, theme }) => {
+      matchUtilities(
+        {
+          "animation-delay": (value) => {
+            return {
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+              "animation-delay": value,
+            };
+          },
+        },
+        {
+          values: theme("transitionDelay"),
+        },
       );
     }),
   ],

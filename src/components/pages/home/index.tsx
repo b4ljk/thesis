@@ -26,7 +26,7 @@ export default function HeroHeader() {
             </h1>
             <div className="absolute bottom-0 left-4 z-[-11] h-7 w-[440px] bg-gradient-to-r from-[#78dbfe] via-[#e387fb] to-transparent"></div>
           </div>
-          <h2 className="text-start text-lg text-muted-foreground lg:text-2xl">
+          <h2 className="animate-typing overflow-hidden whitespace-nowrap border-r-[15px] border-r-slate-800  text-start text-lg font-bold text-muted-foreground transition dark:border-r-white lg:text-2xl">
             {heroHeader.subheader}
           </h2>
         </div>
