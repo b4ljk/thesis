@@ -34,7 +34,11 @@ const Upload: React.FC<UploadProps> = ({ children }) => {
     setUploadProgress((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const uploadAllFiles = async (files: File[]) => {
+  const uploadAllFiles = async (
+    password: string,
+    otp: string,
+    files: File[],
+  ) => {
     let index = 0;
     for (const file of files) {
       const { name, type, size } = file;
@@ -83,7 +87,7 @@ const Upload: React.FC<UploadProps> = ({ children }) => {
             <p className="text-2xl font-bold">Оруулсан файлын жагсаалт</p>
             <Button
               onClick={() => {
-                uploadAllFiles(files);
+                // uploadAllFiles(files);
               }}
             >
               Илгээх

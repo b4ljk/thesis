@@ -7,7 +7,6 @@ import {
 } from "~/lib/awsHelper";
 import crypto from "crypto";
 import { createKeySchema } from "~/lib/schemas/key";
-import { create } from "domain";
 
 export const secretKeyRoute = createTRPCRouter({
   createKey: protectedProcedure

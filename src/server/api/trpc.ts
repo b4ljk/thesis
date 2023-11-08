@@ -45,6 +45,8 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
   };
 };
 
+export type TRPCContext = ReturnType<typeof createInnerTRPCContext>;
+
 /**
  * This is the actual context you will use in your router. It will be used to process every request
  * that goes through your tRPC endpoint.

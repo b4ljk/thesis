@@ -4,6 +4,7 @@ import { authRouter } from "./routers/auth";
 import { s3Router } from "./routers/s3";
 import { secretKeyRoute } from "./routers/key";
 import { signerRoute } from "./routers/signer";
+import { otpRoute } from "./routers/otp";
 
 /**
  * This is the primary router for your server.
@@ -16,6 +17,7 @@ export const appRouter = createTRPCRouter({
   s3_router: s3Router,
   key_router: secretKeyRoute,
   sign_router: signerRoute,
+  otp_router: otpRoute,
 });
 
 // export type definition of API

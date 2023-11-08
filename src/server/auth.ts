@@ -94,6 +94,7 @@ export const authOptions: NextAuthOptions = {
           type: "text",
         },
         password: { label: "Password", type: "password" },
+        otp: { label: "OTP", type: "text" },
       },
       async authorize(credentials, req) {
         // You need to provide your own logic here that takes the credentials
@@ -102,8 +103,6 @@ export const authOptions: NextAuthOptions = {
         // e.g. return { id: 1, name: 'J Smith', email: 'jsmith@example.com' }
         // You can also use the `req` object to obtain additional parameters
         // (i.e., the request IP address)
-
-        console.log(req);
 
         if (!credentials?.email || !credentials?.password) {
           throw new TRPCError({

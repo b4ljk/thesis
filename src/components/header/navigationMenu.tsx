@@ -31,6 +31,16 @@ const components: { title: string; href: string; description: string }[] = [
     href: "/verify",
     description: "Бичиг бүрэн бүтэн хөндөгдөөгүй байдлыг шалгах",
   },
+  {
+    title: "Крифтограф",
+    href: "/cryptography",
+    description: "Крифтографын алгоритмуудыг ашиглах",
+  },
+  {
+    title: "Файл хадгалах",
+    href: "/upload",
+    description: "Өөрийн файлыг үүлэнд хадгалах",
+  },
 ];
 
 export function NavigationMenuComponent({

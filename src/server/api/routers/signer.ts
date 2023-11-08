@@ -83,15 +83,18 @@ export const signerRoute = createTRPCRouter({
         key: privateKeyFile.Body as Buffer,
         passphrase: input.passphrase,
       });
+
       const universal_id = uuidv4();
       let pdfBuffer = s3Obj.Body as Buffer;
 
       const pdfDoc = await PDFDocument.load(pdfBuffer);
+
       pdfDoc.setSubject(universal_id);
       const pdfBytes = await pdfDoc.save({
         useObjectStreams: false,
         updateFieldAppearances: false,
       });
+
       pdfBuffer = Buffer.from(pdfBytes);
 
       const serverSigner = new P12Signer(certificateBuffer, {

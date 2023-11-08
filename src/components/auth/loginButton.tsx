@@ -1,10 +1,8 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import Image from "next/image";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -12,22 +10,12 @@ import { Button } from "../ui/button";
 import { Label } from "@radix-ui/react-label";
 import { Input } from "../ui/input";
 import { type LoginInput } from "~/utils/schemas";
-import { type SubmitHandler, useForm } from "react-hook-form";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { useState } from "react";
 import { signIn } from "next-auth/react";
-import Link from "next/link";
-import Register from "../../pages/register/index";
 import { api } from "~/utils/api";
 import toast from "react-hot-toast";
-import { getHTTPStatusCode } from "@trpc/server/http";
 import { useRouter } from "next/router";
 import { useModalStore } from "~/stores";
 
@@ -86,7 +74,7 @@ const LoginModal: React.FC<ModalProps> = ({ handleModal, handleModalType }) => {
       redirect: false,
       email: data.email, // changed from "test"
       password: data.password, // changed from "test"
-      callbackUrl: "/profile",
+      callbackUrl: "/otp/create",
     });
     if (res?.ok) {
       handleModal();
