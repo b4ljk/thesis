@@ -21,12 +21,12 @@ export default function FeatureCards() {
               {cards.image !== "" ? (
                 <div className="flex items-center justify-center">
                   <div className="flex flex-1 bg-white">
-                    <Image
+                    {/* <Image
                       src={cards.image}
                       width={100}
                       height={100}
                       alt="Card image"
-                    />
+                    /> */}
                   </div>
                 </div>
               ) : (
