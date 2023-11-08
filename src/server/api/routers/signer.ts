@@ -22,11 +22,20 @@ import { v4 as uuidv4 } from "uuid";
 import pdf from "pdf-parse";
 import * as PDFJS from "pdfjs-dist";
 import { PDFDocument } from "pdf-lib";
+import { verify } from "./otp";
 
 export const signerRoute = createTRPCRouter({
   signDocument: protectedProcedure
     .input(signatureSchema)
     .mutation(async ({ input, ctx }) => {
+      const otp_valid = await verify({ input: { otp: input.otp }, ctx });
+      if (!otp_valid) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "Таны оруулсан код буруу байна.",
+        });
+      }
+
       const fileData = await ctx.db.userUploadedFiles.findUnique({
         where: {
           id: input.file_id,

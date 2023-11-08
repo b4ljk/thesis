@@ -41,6 +41,11 @@ const components: { title: string; href: string; description: string }[] = [
     href: "/upload",
     description: "Өөрийн файлыг үүлэнд хадгалах",
   },
+  {
+    title: "2FA идэвхижүүлэх",
+    href: "/otp/create",
+    description: "Two Factor Authentication идэвхижүүлэх",
+  },
 ];
 
 export function NavigationMenuComponent({

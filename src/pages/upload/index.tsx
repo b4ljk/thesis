@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 import { Progress } from "@/components/ui/progress";
 import { set } from "react-hook-form";
 import { useRouter } from "next/router";
+import { DialogComponent } from "~/components/upload/dialog";
 
 interface UploadProps {
   children: ReactNode;
@@ -39,6 +40,7 @@ const Upload: React.FC<UploadProps> = ({ children }) => {
     otp: string,
     files: File[],
   ) => {
+    console.log(password, otp);
     let index = 0;
     for (const file of files) {
       const { name, type, size } = file;
@@ -65,7 +67,8 @@ const Upload: React.FC<UploadProps> = ({ children }) => {
           toast.success("Амжилттай илгээлээ");
           const response = await signFile.mutateAsync({
             file_id: signedUploadUrl.db_id,
-            passphrase: "QWE!@#qwe123",
+            passphrase: password,
+            otp: otp,
           });
           // open new page
           router.replace(response.downloadUrl);
@@ -85,13 +88,8 @@ const Upload: React.FC<UploadProps> = ({ children }) => {
         <div className="mt-5">
           <div className="flex justify-between">
             <p className="text-2xl font-bold">Оруулсан файлын жагсаалт</p>
-            <Button
-              onClick={() => {
-                // uploadAllFiles(files);
-              }}
-            >
-              Илгээх
-            </Button>
+
+            <DialogComponent uploadAllFiles={uploadAllFiles} files={files} />
           </div>
           <div className="my-2 flex flex-wrap gap-4">
             {files.map((file, index) => {
