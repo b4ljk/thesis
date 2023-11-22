@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import OTPInput from "./OTP";
+import OTPInput from "./one-time-pass";
 import { api } from "~/utils/api";
 import { Button } from "~/components/ui/button";
 import QRCode from "qrcode";

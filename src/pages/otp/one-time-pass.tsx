@@ -9,7 +9,7 @@ interface OTPInputProps {
 }
 
 export default function OTPInput({
-  value,
+  value = "",
   onChange,
   length,
   className,
