@@ -82,7 +82,7 @@ function RSA(bitSize: number) {
 }
 
 export default function Cryptography() {
-  const { publicKey, privateKey } = useMemo(() => RSA(1024), []);
+  // const { publicKey, privateKey } = useMemo(() => RSA(1024), []);
   console.log("hello i am on server");
 
   return (
