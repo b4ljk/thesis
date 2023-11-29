@@ -3,6 +3,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import bigInt from "big-integer";
 import { useMemo } from "react";
+import { generateKeyPairSync } from "crypto";
+import { generateRSAkeys } from "~/lib/rsa";
 
 function isProbablyPrime(n: bigInt.BigInteger, k: number): boolean {
   if (n.equals(2) || n.equals(3)) return true;
@@ -81,9 +83,12 @@ function RSA(bitSize: number) {
 }
 
 export default function Cryptography() {
-  // const { publicKey, privateKey } = useMemo(() => RSA(1024), []);
-  console.log("hello i am on server");
-
+  const { publicKey, privateKey } = generateRSAkeys(2048);
+  // console.log(privateKey.e.toString());
+  // console.log(privateKey.d.toString());
+  // console.log(privateKey.n.toString());
+  console.log("public key");
+  console.log(publicKey.e.toString());
   return (
     <div className="container">
       <h1 className="text-3xl font-bold">Криптограф</h1>
