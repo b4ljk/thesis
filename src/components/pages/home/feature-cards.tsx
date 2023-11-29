@@ -55,7 +55,9 @@ export default function FeatureCards() {
             >
               {cards.image !== "" ? (
                 <div className="flex items-center justify-center">
-                  <div className="flex flex-1 bg-white">{cards.image}</div>
+                  <div className="flex flex-1 bg-white dark:bg-slate-800">
+                    {cards.image}
+                  </div>
                 </div>
               ) : (
                 <></>

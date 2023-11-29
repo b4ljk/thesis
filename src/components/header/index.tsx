@@ -14,8 +14,6 @@ import { NavigationMenuComponent } from "./navigationMenu";
 
 const Header = () => {
   const [opened, setOpened] = useState(false);
-  const pathName = usePathname();
-  const isHome = pathName === "/";
   const { data: session } = useSession();
 
   const handleClose = () => {
@@ -38,7 +36,7 @@ const Header = () => {
                 src="/images/logo.png"
                 alt="logo"
               />
-              <p className="font-bold">Cloudsign</p>
+              <p className="font-bold">Cloud Cryptography</p>
             </div>
           </Link>
         </div>

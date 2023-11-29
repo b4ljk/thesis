@@ -10,8 +10,8 @@ export type HeroHeader = {
 };
 
 export const heroHeader: HeroHeader = {
-  header: `Cloudsign`,
-  subheader: `Монголын Анхны үүлэн тоон гарын үсгийн систем`,
+  header: `Криптограф`,
+  subheader: `Монголын Анхны үүлэн крифтографын систем`,
   image: `/cloud.png`,
 };
 
@@ -24,7 +24,7 @@ export default function HeroHeader() {
             <h1 className="text-start text-6xl font-black text-slate-800 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.4)] dark:text-slate-100 lg:text-7xl">
               {heroHeader.header}
             </h1>
-            <div className="absolute bottom-0 left-4 z-[-11] h-7 w-[440px] bg-gradient-to-r from-[#78dbfe] via-[#e387fb] to-transparent"></div>
+            <div className="absolute bottom-0 left-4 z-[-11] h-7 w-[480px] bg-gradient-to-r from-[#78dbfe] via-[#e387fb] to-transparent"></div>
           </div>
           <h2 className="animate-typing overflow-hidden whitespace-nowrap border-r-[15px] border-r-slate-800 pr-0 text-start text-lg font-bold text-muted-foreground transition dark:border-r-white lg:text-2xl">
             {heroHeader.subheader}
@@ -38,7 +38,7 @@ export default function HeroHeader() {
             Туршиж үзэх
           </Link>
           <Link
-            href="/key/create"
+            href="/cryptography"
             className={`w-[10rem] ${cn(
               buttonVariants({ size: "lg", variant: "outline" }),
             )}`}

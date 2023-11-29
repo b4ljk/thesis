@@ -32,24 +32,6 @@ function getPresignedPost({
   });
 }
 
-function getPresignUrlPromiseFunction(
-  s3: aws.S3,
-  s3Params: unknown,
-): Promise<string> {
-  return new Promise((resolve, reject) => {
-    try {
-      s3.getSignedUrl("putObject", s3Params, function (err, data) {
-        if (err) {
-          return reject(err);
-        }
-        resolve(data);
-      });
-    } catch (error) {
-      return reject(error);
-    }
-  });
-}
-
 export const s3Router = createTRPCRouter({
   getSignedUrl: protectedProcedure
     .input(signUrlSchema)

@@ -14,7 +14,6 @@ function isProbablyPrime(n: bigInt.BigInteger, k: number): boolean {
   while (d.isEven()) {
     d = d.divide(2);
     s = s.plus(1);
-    console.log("PRIME NOO");
   }
 
   for (let i = 0; i < k; i++) {
