@@ -23,6 +23,7 @@ import pdf from "pdf-parse";
 import * as PDFJS from "pdfjs-dist";
 import { PDFDocument } from "pdf-lib";
 import { verify } from "./otp";
+import { serverPassphrase } from "~/lib/contants";
 
 export const signerRoute = createTRPCRouter({
   signDocument: protectedProcedure
@@ -86,7 +87,13 @@ export const signerRoute = createTRPCRouter({
         });
       }
 
-      const certificateBuffer = fs.readFileSync(`public/certificate.p12`);
+      // const certificateBuffer = fs.readFileSync(`public/certificate.p12`);
+      const certificateFile = await downloadFileFromS3(
+        process.env.S3_BUCKET!,
+        "signature/certificate.p12",
+      );
+
+      const certificateBuffer = certificateFile.Body as Buffer;
 
       const privateKey = crypto.createPrivateKey({
         key: privateKeyFile.Body as Buffer,
@@ -99,6 +106,7 @@ export const signerRoute = createTRPCRouter({
       const pdfDoc = await PDFDocument.load(pdfBuffer);
 
       pdfDoc.setSubject(universal_id);
+
       const pdfBytes = await pdfDoc.save({
         useObjectStreams: false,
         updateFieldAppearances: false,
@@ -107,7 +115,7 @@ export const signerRoute = createTRPCRouter({
       pdfBuffer = Buffer.from(pdfBytes);
 
       const serverSigner = new P12Signer(certificateBuffer, {
-        passphrase: "QWE!@#qwe123",
+        passphrase: serverPassphrase,
       });
 
       const pdfWithPlaceholder = plainAddPlaceholder({
