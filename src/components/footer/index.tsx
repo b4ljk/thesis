@@ -122,7 +122,7 @@ export default function Footer() {
           <ModeToggle />
         </div>
         <p className="mt-8 text-center text-base leading-6 text-gray-400">
-          © {year} Cloud Sign, Inc. Бүх эрх хуулиар хамгаалагдсан.
+          © {year} Клауд Сайн Бүх эрх хуулиар хамгаалагдсан.
         </p>
       </div>
     </section>
