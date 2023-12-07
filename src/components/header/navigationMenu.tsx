@@ -37,8 +37,8 @@ const components: { title: string; href: string; description: string }[] = [
     description: "Крифтографын алгоритмуудыг ашиглах",
   },
   {
-    title: "Файл хадгалах",
-    href: "/upload",
+    title: "AES шифрлэх",
+    href: "/aes",
     description: "Өөрийн файлыг үүлэнд хадгалах",
   },
   {

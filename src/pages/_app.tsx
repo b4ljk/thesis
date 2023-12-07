@@ -18,7 +18,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
   const currentTheme = useThemeStore.use.theme();
   return (
     <SessionProvider session={session}>
-      <div className="flex min-h-screen w-full flex-col pt-[90px]">
+      <div className="flex min-h-screen w-full flex-col pt-[95px]">
         <ThemeProvider
           attribute="class"
           defaultTheme={currentTheme}
