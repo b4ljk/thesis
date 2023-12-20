@@ -36,7 +36,7 @@ const Header = () => {
                 src="/images/logo.png"
                 alt="logo"
               />
-              <p className="font-bold">Cloud Cryptography</p>
+              <p className="font-bold">CloudSign</p>
             </div>
           </Link>
         </div>

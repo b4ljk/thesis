@@ -10,8 +10,8 @@ export type HeroHeader = {
 };
 
 export const heroHeader: HeroHeader = {
-  header: `Криптограф`,
-  subheader: `Монголын Анхны үүлэн крифтографын систем`,
+  header: `CloudSign`,
+  subheader: `Монголын Анхны үүлэн тоон гарын үсгийн систем`,
   image: `/cloud.png`,
 };
 
@@ -52,7 +52,7 @@ export default function HeroHeader() {
           src="/cloud.png"
           width={1024}
           height={1024}
-          alt="Cloud sign hero image"
+          alt="CloudSign hero image"
           className="w-full"
           priority
         />

@@ -9,8 +9,7 @@ export default function Home() {
     <div className="flex w-full">
       <Head>
         <title>
-          Cloud Cryptography - Mongolian First Cloud-Based Digital Signature
-          Service
+          CloudSign - Mongolian First Cloud-Based Digital Signature Service
         </title>
         <meta
           name="description"

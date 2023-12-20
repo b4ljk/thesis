@@ -122,7 +122,7 @@ export default function Footer() {
           <ModeToggle />
         </div>
         <p className="mt-8 text-center text-base leading-6 text-gray-400">
-          © {year} Клауд Криптограф Бүх эрх хуулиар хамгаалагдсан.
+          © {year} Клауд сайгн Бүх эрх хуулиар хамгаалагдсан.
         </p>
       </div>
     </section>

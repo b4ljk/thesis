@@ -52,17 +52,14 @@ function generateLargePrime(numDigits: number): bigInt.BigInteger {
   const max = bigInt(10).pow(numDigits).minus(1);
 
   while (true) {
-    console.log("not found");
     const possiblePrime = bigInt.randBetween(min, max);
     if (possiblePrime.isProbablePrime(256)) return possiblePrime;
   }
 }
 
 function RSA(bitSize: number) {
-  console.log("RSA START");
   const p = generateLargePrime(bitSize);
   const q = generateLargePrime(bitSize);
-  console.log(p, q);
 
   const n = p.multiply(q);
   const phi = p.minus(1).multiply(q.minus(1));
@@ -70,12 +67,10 @@ function RSA(bitSize: number) {
   let e = bigInt(65537);
 
   while (!e.greater(phi) || bigInt.gcd(e, phi).notEquals(1)) {
-    console.log("RSA");
     e = e.plus(2);
   }
 
   const d = e.modInv(phi);
-  console.log("RSA end");
 
   return {
     publicKey: {
@@ -101,9 +96,7 @@ const createCihperText = (
     hex += text.charCodeAt(i).toString(16);
   }
   const m = new forge.jsbn.BigInteger(hex, 16);
-  console.log(m);
   const c = m.modPow(exponent, modulus);
-  console.log(c);
   return c.toString();
 };
 
@@ -116,14 +109,11 @@ const decipher = (
 ) => {
   const c = new forge.jsbn.BigInteger(cipherText);
   const m = c.modPow(d, modulus);
-  console.log(m);
   const hex = m.toString(16);
-  console.log(hex);
   let text = "";
   for (let i = 0; i < hex.length; i += 2) {
     text += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
   }
-  console.log(text);
   return text;
 };
 

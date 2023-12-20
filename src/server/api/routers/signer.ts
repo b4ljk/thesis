@@ -87,7 +87,6 @@ export const signerRoute = createTRPCRouter({
         });
       }
 
-      // const certificateBuffer = fs.readFileSync(`public/certificate.p12`);
       const certificateFile = await downloadFileFromS3(
         process.env.S3_BUCKET!,
         "signature/certificate.p12",
@@ -129,9 +128,6 @@ export const signerRoute = createTRPCRouter({
       const signedPdf = await signpdf.sign(pdfWithPlaceholder, serverSigner);
 
       const hash = crypto.createHash("sha256").update(signedPdf).digest("hex");
-      console.log(true);
-      console.log("hash", hash);
-      console.log(true);
 
       const signer = crypto.createSign("RSA-SHA256");
       signer.update(hash);

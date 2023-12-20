@@ -43,11 +43,11 @@ export default function OTP() {
     }
   }, [otp]);
 
-  useEffect(() => {
-    if (ifActivated.data?.isActivated) {
-      router.replace("/profile");
-    }
-  }, [ifActivated.data?.isActivated]);
+  // useEffect(() => {
+  //   if (ifActivated.data?.isActivated) {
+  //     router.replace("/profile");
+  //   }
+  // }, [ifActivated.data?.isActivated]);
 
   if (query.isLoading) {
     return (

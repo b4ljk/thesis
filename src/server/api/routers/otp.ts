@@ -70,7 +70,7 @@ export const otpRoute = createTRPCRouter({
 
     const qrUrl = authenticator.keyuri(
       email!,
-      "Cloud Signature Mongolia",
+      "CloudSignature Mongolia",
       secret,
     );
     return {
