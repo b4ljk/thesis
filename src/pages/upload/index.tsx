@@ -49,6 +49,7 @@ const Upload: React.FC<UploadProps> = ({ children }) => {
           filename: name,
           filetype: type,
           size: size,
+          otp: otp,
         })
         .catch((err) => {
           console.log(err);

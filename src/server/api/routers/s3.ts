@@ -3,6 +3,7 @@ import { TRPCError } from "@trpc/server";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { signUrlSchema } from "~/utils/schemas";
 import { type PresignedPost } from "aws-sdk/clients/s3";
+import { verify } from "./otp";
 
 const MAX_FILE_SIZE_MB = 100;
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
@@ -40,6 +41,14 @@ export const s3Router = createTRPCRouter({
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: `Файлын хэмжээ ${MAX_FILE_SIZE_MB} MB-ээс их байна`,
+        });
+      }
+
+      const otp_valid = await verify({ input: { otp: input.otp }, ctx });
+      if (!otp_valid) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "Таны оруулсан код буруу байна.",
         });
       }
 

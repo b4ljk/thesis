@@ -29,14 +29,6 @@ export const signerRoute = createTRPCRouter({
   signDocument: protectedProcedure
     .input(signatureSchema)
     .mutation(async ({ input, ctx }) => {
-      const otp_valid = await verify({ input: { otp: input.otp }, ctx });
-      if (!otp_valid) {
-        throw new TRPCError({
-          code: "CONFLICT",
-          message: "Таны оруулсан код буруу байна.",
-        });
-      }
-
       const fileData = await ctx.db.userUploadedFiles.findUnique({
         where: {
           id: input.file_id,
