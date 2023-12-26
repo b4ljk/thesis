@@ -131,6 +131,9 @@ dependencies:
   pdfjs-dist:
     specifier: ^3.11.174
     version: 3.11.174
+  pdfkit:
+    specifier: ^0.10.0
+    version: 0.10.0
   pdfmake:
     specifier: ^0.2.7
     version: 0.2.7

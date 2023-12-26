@@ -27,6 +27,7 @@
     "@radix-ui/react-separator": "^1.0.3",
     "@radix-ui/react-slot": "^1.0.2",
     "@signpdf/placeholder-pdfkit010": "^3.0.0",
+    "pdfkit": "^0.10.0",
     "@signpdf/placeholder-plain": "^3.0.0",
     "@signpdf/signer-p12": "^3.0.0",
     "@signpdf/signpdf": "^3.0.0",
