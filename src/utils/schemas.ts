@@ -22,6 +22,6 @@ export const signUrlSchema = z.object({
   filename: z.string(),
   filetype: z.string().default("application/pdf"),
   size: z.number().optional().default(0),
-  otp: z.string(),
+  otp: z.string().optional(),
   passphrase: z.string().optional(),
 });

@@ -44,7 +44,10 @@ export const s3Router = createTRPCRouter({
         });
       }
 
-      const otp_valid = await verify({ input: { otp: input.otp }, ctx });
+      const otp_valid = await verify({
+        input: { otp: input.otp ?? "WRONG" },
+        ctx,
+      });
       if (!otp_valid) {
         throw new TRPCError({
           code: "CONFLICT",
